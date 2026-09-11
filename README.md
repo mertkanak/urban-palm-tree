@@ -82,8 +82,11 @@ Desktop Organizer, entegre GitHub Releases desteğine sahiptir:
 | `⌥ + A` (Option + A) | **Ana Paneli Aç / Kapat** (Tek elle süper hızlı erişim) |
 | `Caps + Shift + A` veya `⌃ + ⇧ + A` | **Ana Paneli Aç / Kapat** (Sol el doğrudan erişim) |
 | `⌥ + Space` (Option + Boşluk) | Ana Paneli Aç / Kapat |
-| `⌥ + Tab` (Option + Tab) | Quick Switch (Spotlight Tarzı Hızlı Geçiş) |
-| `⌘ + 1...9` | Quick Switch panelinde ilk 9 pencereye doğrudan geçiş |
+| `⌥ + Tab` veya `⌃ + Tab` | **Hızlı Pencere Değiştirici** (Arka plandayken de açılır, çakışmaz) |
+| `⌥ + \`` (Option + Tırnak) | **Hızlı Pencere Değiştirici** (Mac yerel pencere geçişi) |
+| `⌃ + ⇧ + W` (Ctrl + Shift + W) | **Hızlı Pencere Değiştirici** |
+| `← →` / `↑ ↓` / `Tab` | Hızlı Değiştiricide Pencereler Arası Gezinme |
+| `Enter ↵` / `Space` | Seçili Pencereye Zıpla |
 | `ESC` | Panelleri Kapat |
 
 ---

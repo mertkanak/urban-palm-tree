@@ -1,36 +1,19 @@
 import SwiftUI
 
-/// Hızlı Pencere Değiştirici (Quick Window Switcher)
-/// Sol-Sağ ve Yukarı-Aşağı yön tuşlarıyla veya Tab ile pencereler arasında gezinilir,
-/// Enter ile seçilen pencereye zıplanır, ESC ile kapatılır.
+/// Hızlı Pencere Değiştirici (Quick Window Switcher HUD)
+/// Büyük kare önizleme kartları, sol-sağ ve yukarı-aşağı ok tuşlarıyla gezinme,
+/// Enter ile pencereye geçiş, ESC ile anında kapanma.
 public struct QuickSwitchView: View {
-    @ObservedObject var windowManager: WindowManager = .shared
-    @State private var selectedIndex: Int = 0
-    @State private var searchText: String = ""
+    @ObservedObject var manager: QuickSwitchManager = .shared
 
-    public var onDismiss: () -> Void
-
-    public init(onDismiss: @escaping () -> Void) {
-        self.onDismiss = onDismiss
-    }
-
-    private var displayWindows: [WindowItem] {
-        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            return windowManager.windows
-        }
-        return windowManager.windows.filter {
-            $0.windowTitle.localizedCaseInsensitiveContains(trimmed) ||
-            $0.appName.localizedCaseInsensitiveContains(trimmed)
-        }
-    }
+    public init() {}
 
     public var body: some View {
-        VStack(spacing: 14) {
-            // Üst Başlık & Arama / Bilgi Barı
-            HStack(spacing: 10) {
+        VStack(spacing: 12) {
+            // Üst Bilgi Barı
+            HStack(spacing: 8) {
                 Image(systemName: "square.2.layers.3d")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.blue)
 
                 Text("Hızlı Pencere Geçişi")
@@ -39,7 +22,7 @@ public struct QuickSwitchView: View {
 
                 Spacer()
 
-                Text("\(displayWindows.count) Açık Pencere")
+                Text("\(manager.windows.count) Açık Pencere")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(.secondary)
             }
@@ -47,7 +30,7 @@ public struct QuickSwitchView: View {
             .padding(.top, 14)
 
             // Pencerelerin Kare Önizleme Kartları (Yatay Kaydırılabilir Grid)
-            if displayWindows.isEmpty {
+            if manager.windows.isEmpty {
                 VStack(spacing: 8) {
                     Image(systemName: "macwindow.on.rectangle")
                         .font(.system(size: 32))
@@ -56,38 +39,38 @@ public struct QuickSwitchView: View {
                         .font(.system(size: 13))
                         .foregroundColor(.secondary)
                 }
-                .frame(height: 170)
+                .frame(height: 160)
             } else {
                 ScrollViewReader { proxy in
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 14) {
-                            ForEach(Array(displayWindows.enumerated()), id: \.element.id) { index, item in
+                            ForEach(Array(manager.windows.enumerated()), id: \.element.id) { index, item in
                                 QuickSwitchCard(
                                     item: item,
-                                    isSelected: index == selectedIndex
+                                    isSelected: index == manager.selectedIndex
                                 )
                                 .id(index)
                                 .onTapGesture {
-                                    selectedIndex = index
-                                    activateWindow(item)
+                                    manager.selectedIndex = index
+                                    manager.confirmSelection()
                                 }
                             }
                         }
                         .padding(.horizontal, 18)
                         .padding(.vertical, 8)
                     }
-                    .onChange(of: selectedIndex) {
-                        withAnimation(.easeInOut(duration: 0.18)) {
-                            proxy.scrollTo(selectedIndex, anchor: .center)
+                    .onChange(of: manager.selectedIndex) {
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            proxy.scrollTo(manager.selectedIndex, anchor: .center)
                         }
                     }
                 }
-                .frame(height: 175)
+                .frame(height: 168)
             }
 
-            // Seçili Pencere Detay Başlığı
-            if !displayWindows.isEmpty && selectedIndex < displayWindows.count {
-                let current = displayWindows[selectedIndex]
+            // Seçili Pencere Başlığı
+            if !manager.windows.isEmpty && manager.selectedIndex < manager.windows.count {
+                let current = manager.windows[manager.selectedIndex]
                 HStack(spacing: 8) {
                     if let icon = current.appIcon {
                         Image(nsImage: icon)
@@ -117,7 +100,7 @@ public struct QuickSwitchView: View {
                 .padding(.horizontal, 14)
 
             // Alt Bilgi / Kısayol İpuçları
-            HStack(spacing: 20) {
+            HStack(spacing: 16) {
                 HStack(spacing: 4) {
                     Text("← → / ↑ ↓")
                         .font(.system(size: 10, weight: .bold, design: .monospaced))
@@ -167,77 +150,16 @@ public struct QuickSwitchView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(LinearGradient(colors: [Color.white.opacity(0.25), Color.white.opacity(0.08)], startPoint: .top, endPoint: .bottom), lineWidth: 1)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.28), Color.white.opacity(0.08)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ),
+                    lineWidth: 1
+                )
         )
-        .shadow(color: .black.opacity(0.55), radius: 30, x: 0, y: 15)
-        .onAppear {
-            windowManager.refreshWindows()
-            selectedIndex = 0
-        }
-        // Klavye kontrolü: Oklar, Tab, Return, ESC
-        .onKeyPress(.leftArrow) {
-            selectPrevious()
-            return .handled
-        }
-        .onKeyPress(.upArrow) {
-            selectPrevious()
-            return .handled
-        }
-        .onKeyPress(.rightArrow) {
-            selectNext()
-            return .handled
-        }
-        .onKeyPress(.downArrow) {
-            selectNext()
-            return .handled
-        }
-        .onKeyPress(.tab) {
-            selectNext()
-            return .handled
-        }
-        .onKeyPress(.return) {
-            confirmSelection()
-            return .handled
-        }
-        .onKeyPress(.escape) {
-            onDismiss()
-            return .handled
-        }
-        .onKeyPress(.space) {
-            confirmSelection()
-            return .handled
-        }
-    }
-
-    private func selectNext() {
-        guard !displayWindows.isEmpty else { return }
-        if selectedIndex < displayWindows.count - 1 {
-            selectedIndex += 1
-        } else {
-            selectedIndex = 0 // Başa sar
-        }
-    }
-
-    private func selectPrevious() {
-        guard !displayWindows.isEmpty else { return }
-        if selectedIndex > 0 {
-            selectedIndex -= 1
-        } else {
-            selectedIndex = displayWindows.count - 1 // Sona sar
-        }
-    }
-
-    private func confirmSelection() {
-        guard !displayWindows.isEmpty, selectedIndex < displayWindows.count else {
-            onDismiss()
-            return
-        }
-        activateWindow(displayWindows[selectedIndex])
-    }
-
-    private func activateWindow(_ item: WindowItem) {
-        windowManager.focusWindow(item)
-        onDismiss()
+        .shadow(color: .black.opacity(0.55), radius: 32, x: 0, y: 16)
     }
 }
 
@@ -253,13 +175,13 @@ private struct QuickSwitchCard: View {
             ZStack(alignment: .topLeading) {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(Color.black.opacity(0.45))
-                    .frame(width: 170, height: 110)
+                    .frame(width: 170, height: 108)
 
                 if let thumb = item.thumbnail {
                     Image(nsImage: thumb)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 170, height: 110)
+                        .frame(width: 170, height: 108)
                         .clipped()
                         .cornerRadius(10)
                 } else {
@@ -271,7 +193,7 @@ private struct QuickSwitchCard: View {
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(.secondary)
                     }
-                    .frame(width: 170, height: 110)
+                    .frame(width: 170, height: 108)
                 }
 
                 // Sol Üstte App İkonu Rozeti
@@ -282,7 +204,7 @@ private struct QuickSwitchCard: View {
                         .frame(width: 22, height: 22)
                         .background(
                             Circle()
-                                .fill(Color.black.opacity(0.6))
+                                .fill(Color.black.opacity(0.65))
                                 .frame(width: 26, height: 26)
                         )
                         .padding(6)
@@ -297,9 +219,9 @@ private struct QuickSwitchCard: View {
             )
             .shadow(
                 color: isSelected ? Color.blue.opacity(0.55) : Color.black.opacity(0.2),
-                radius: isSelected ? 10 : 4,
+                radius: isSelected ? 12 : 4,
                 x: 0,
-                y: isSelected ? 4 : 2
+                y: isSelected ? 5 : 2
             )
             .scaleEffect(isSelected ? 1.05 : 0.98)
             .animation(.spring(response: 0.22, dampingFraction: 0.72), value: isSelected)

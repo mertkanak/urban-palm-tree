@@ -56,7 +56,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         toggleItem.target = self
         menu.addItem(toggleItem)
 
-        let quickItem = NSMenuItem(title: "Hızlı Pencere Değiştirici (⌥+S veya ⌥+Tab)", action: #selector(toggleQuickSwitch), keyEquivalent: "")
+        let quickItem = NSMenuItem(title: "Hızlı Pencere Değiştirici (⌥+Tab / ⌃+Tab)", action: #selector(toggleQuickSwitch), keyEquivalent: "")
         quickItem.target = self
         menu.addItem(quickItem)
 
@@ -132,7 +132,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    // MARK: - Quick Switch Panel (⌥+Tab / ⌥+S)
+    // MARK: - Quick Switch Panel (⌥+Tab / ⌃+Tab / ⌃⇧W / ⌥`)
 
     private func setupQuickSwitchPanel() {
         let panel = KeyableQuickSwitchPanel(
@@ -148,22 +148,24 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         panel.hidesOnDeactivate = false
 
-        let rootView = QuickSwitchView {
-            Task { @MainActor in
-                self.quickSwitchPanel?.orderOut(nil)
-            }
-        }
+        let rootView = QuickSwitchView()
         panel.contentView = NSHostingView(rootView: rootView)
         self.quickSwitchPanel = panel
+
+        QuickSwitchManager.shared.onDismiss = { [weak self] in
+            Task { @MainActor in
+                self?.quickSwitchPanel?.orderOut(nil)
+            }
+        }
     }
 
     @objc public func toggleQuickSwitch() {
         guard let panel = quickSwitchPanel else { return }
 
         if panel.isVisible {
-            panel.orderOut(nil)
+            QuickSwitchManager.shared.dismiss()
         } else {
-            WindowManager.shared.refreshWindows()
+            QuickSwitchManager.shared.prepare()
             panel.center()
             panel.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
@@ -175,7 +177,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Ana panelin açılıp kapanmasını tetikleyen kısayolları kontrol eder
     private func isToggleOverlayEvent(_ event: NSEvent) -> Bool {
         // 1. ⌥ + Space (Option + Space: keyCode 49)
-        if event.modifierFlags.contains(.option) && event.keyCode == 49 {
+        if event.modifierFlags.contains(.option) && !event.modifierFlags.contains(.control) && event.keyCode == 49 {
             return true
         }
 
@@ -198,7 +200,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
                 return true
             }
 
-            // ⌥ + A (Option + A: tek elle sol parmakla tak diye açılan süper hızlı kısayol)
+            // ⌥ + A (Option + A)
             if flags.contains(.option) && !flags.contains(.command) {
                 return true
             }
@@ -207,30 +209,33 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         return false
     }
 
-    /// Hızlı Pencere Değiştiriciyi tetikleyen kısayolları kontrol eder (⌥+Tab, ⌥+S, ⌥+W)
+    /// Hızlı Pencere Değiştiriciyi tetikleyen kısayolları kontrol eder (Çakışmayan: ⌥Tab, ⌃Tab, ⌃⇧W, ⌥W, ⌥`)
     private func isToggleQuickSwitchEvent(_ event: NSEvent) -> Bool {
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
 
-        // 1. ⌥ + Tab veya ⌃ + Tab (keyCode 48)
+        // 1. ⌥ + Tab veya ⌃ + Tab (keyCode 48) - En popüler ve çakışmayan standart
         if (flags.contains(.option) || flags.contains(.control)) && event.keyCode == 48 {
             return true
         }
 
-        // 2. 'S' tuşu (keyCode 1: Switch) -> ⌥ + S veya ⌃ + ⇧ + S
-        if event.keyCode == 1 {
-            if flags.contains(.option) && !flags.contains(.command) {
+        // 2. ⌥ + ` (Option + Tırnak: keyCode 50 - Mac pencereler arası geçiş)
+        if flags.contains(.option) && event.keyCode == 50 {
+            return true
+        }
+
+        // 3. 'W' tuşu (keyCode 13: Window) -> ⌃ + ⇧ + W veya ⌥ + ⇧ + W veya ⌥ + W
+        if event.keyCode == 13 {
+            if flags.contains(.control) && flags.contains(.shift) {
                 return true
             }
-            if (flags.contains(.capsLock) || flags.contains(.control)) && flags.contains(.shift) {
+            if flags.contains(.option) && !flags.contains(.command) {
                 return true
             }
         }
 
-        // 3. 'W' tuşu (keyCode 13: Window) -> ⌥ + W
-        if event.keyCode == 13 {
-            if flags.contains(.option) && !flags.contains(.command) {
-                return true
-            }
+        // 4. ⌃ + ⌥ + Space (keyCode 49)
+        if flags.contains(.control) && flags.contains(.option) && event.keyCode == 49 {
+            return true
         }
 
         return false
@@ -245,7 +250,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
 
-            // Quick Switch kısayolu (⌥S, ⌥Tab, ⌥W, ⌃Tab)
+            // Quick Switch kısayolu (⌥Tab, ⌃Tab, ⌥W, ⌃⇧W, ⌥`)
             if self?.isToggleQuickSwitchEvent(event) == true {
                 Task { @MainActor in self?.toggleQuickSwitch() }
                 return
@@ -256,41 +261,29 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return event }
 
+            // Eğer Quick Switch paneli açıksa ESC ile hemen kapat
+            if self.quickSwitchPanel?.isVisible == true && event.keyCode == 53 {
+                Task { @MainActor in QuickSwitchManager.shared.dismiss() }
+                return nil
+            }
+
             // Ana panel kısayolu basılırsa kapat
             if self.isToggleOverlayEvent(event) {
-                Task { @MainActor in
-                    self.toggleOverlay()
-                }
+                Task { @MainActor in self.toggleOverlay() }
                 return nil
             }
 
             // Quick Switch kısayolu basılırsa
             if self.isToggleQuickSwitchEvent(event) {
-                Task { @MainActor in
-                    self.toggleQuickSwitch()
-                }
+                Task { @MainActor in self.toggleQuickSwitch() }
                 return nil
             }
 
-            // ESC → Aktif paneli kapat
+            // ESC → Ana overlay kapat
             if event.keyCode == 53 {
                 Task { @MainActor in
                     self.overlayWindow?.orderOut(nil)
-                    self.quickSwitchPanel?.orderOut(nil)
-                }
-                return nil
-            }
-
-            // ⌘+1…9 → Filtrelenmiş listedeki N. pencereyi öne getir
-            if event.modifierFlags.contains(.command),
-               let numStr = event.characters,
-               let num = Int(numStr), num >= 1, num <= 9 {
-                Task { @MainActor in
-                    let windows = WindowManager.shared.filteredWindows
-                    let idx = num - 1
-                    if idx < windows.count {
-                        WindowManager.shared.focusWindow(windows[idx])
-                    }
+                    QuickSwitchManager.shared.dismiss()
                 }
                 return nil
             }
@@ -300,8 +293,54 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-/// Klavye olaylarını tam yakalayabilen borderless NSPanel
+/// Klavye olaylarını doğrudan AppKit seviyesinde yakalayan borderless NSPanel
 fileprivate final class KeyableQuickSwitchPanel: NSPanel {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
+
+    override func sendEvent(_ event: NSEvent) {
+        if event.type == .keyDown {
+            // ESC (53)
+            if event.keyCode == 53 {
+                QuickSwitchManager.shared.dismiss()
+                return
+            }
+
+            // Sol Ok (123) veya Yukarı Ok (126)
+            if event.keyCode == 123 || event.keyCode == 126 {
+                QuickSwitchManager.shared.selectPrevious()
+                return
+            }
+
+            // Sağ Ok (124) veya Aşağı Ok (125)
+            if event.keyCode == 124 || event.keyCode == 125 {
+                QuickSwitchManager.shared.selectNext()
+                return
+            }
+
+            // Tab (48)
+            if event.keyCode == 48 {
+                if event.modifierFlags.contains(.shift) {
+                    QuickSwitchManager.shared.selectPrevious()
+                } else {
+                    QuickSwitchManager.shared.selectNext()
+                }
+                return
+            }
+
+            // Enter / Return (36 / 76) veya Space (49)
+            if event.keyCode == 36 || event.keyCode == 76 || event.keyCode == 49 {
+                QuickSwitchManager.shared.confirmSelection()
+                return
+            }
+        }
+        super.sendEvent(event)
+    }
+
+    override func resignKey() {
+        super.resignKey()
+        DispatchQueue.main.async {
+            QuickSwitchManager.shared.dismiss()
+        }
+    }
 }
