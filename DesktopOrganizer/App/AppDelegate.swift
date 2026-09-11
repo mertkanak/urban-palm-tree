@@ -56,7 +56,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         toggleItem.target = self
         menu.addItem(toggleItem)
 
-        let quickItem = NSMenuItem(title: "Hızlı Geçiş (⌥+Tab)", action: #selector(toggleQuickSwitch), keyEquivalent: "")
+        let quickItem = NSMenuItem(title: "Hızlı Pencere Değiştirici (⌥+S veya ⌥+Tab)", action: #selector(toggleQuickSwitch), keyEquivalent: "")
         quickItem.target = self
         menu.addItem(quickItem)
 
@@ -132,18 +132,18 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    // MARK: - Quick Switch Panel (⌥+Tab)
+    // MARK: - Quick Switch Panel (⌥+Tab / ⌥+S)
 
     private func setupQuickSwitchPanel() {
-        let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 460, height: 60),
-            styleMask: [.borderless, .nonactivatingPanel],
+        let panel = KeyableQuickSwitchPanel(
+            contentRect: NSRect(x: 0, y: 0, width: 620, height: 260),
+            styleMask: [.borderless],
             backing: .buffered,
             defer: false
         )
         panel.isOpaque = false
         panel.backgroundColor = .clear
-        panel.level = .statusBar
+        panel.level = .floating
         panel.isFloatingPanel = true
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         panel.hidesOnDeactivate = false
@@ -163,12 +163,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         if panel.isVisible {
             panel.orderOut(nil)
         } else {
-            if let screen = NSScreen.main {
-                let sw = panel.frame.width
-                let x = screen.frame.midX - sw / 2
-                let y = screen.frame.midY + 80
-                panel.setFrameOrigin(CGPoint(x: x, y: y))
-            }
+            WindowManager.shared.refreshWindows()
+            panel.center()
             panel.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
         }
@@ -211,6 +207,35 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         return false
     }
 
+    /// Hızlı Pencere Değiştiriciyi tetikleyen kısayolları kontrol eder (⌥+Tab, ⌥+S, ⌥+W)
+    private func isToggleQuickSwitchEvent(_ event: NSEvent) -> Bool {
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+
+        // 1. ⌥ + Tab veya ⌃ + Tab (keyCode 48)
+        if (flags.contains(.option) || flags.contains(.control)) && event.keyCode == 48 {
+            return true
+        }
+
+        // 2. 'S' tuşu (keyCode 1: Switch) -> ⌥ + S veya ⌃ + ⇧ + S
+        if event.keyCode == 1 {
+            if flags.contains(.option) && !flags.contains(.command) {
+                return true
+            }
+            if (flags.contains(.capsLock) || flags.contains(.control)) && flags.contains(.shift) {
+                return true
+            }
+        }
+
+        // 3. 'W' tuşu (keyCode 13: Window) -> ⌥ + W
+        if event.keyCode == 13 {
+            if flags.contains(.option) && !flags.contains(.command) {
+                return true
+            }
+        }
+
+        return false
+    }
+
     private func setupGlobalShortcut() {
         // Global monitor (uygulama arka plandayken)
         globalEventMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
@@ -220,9 +245,10 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
 
-            // ⌥+Tab → Quick Switch aç/kapat
-            if event.modifierFlags.contains(.option) && event.keyCode == 48 {
+            // Quick Switch kısayolu (⌥S, ⌥Tab, ⌥W, ⌃Tab)
+            if self?.isToggleQuickSwitchEvent(event) == true {
                 Task { @MainActor in self?.toggleQuickSwitch() }
+                return
             }
         }
 
@@ -238,7 +264,15 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
                 return nil
             }
 
-            // ESC → Overlay kapat
+            // Quick Switch kısayolu basılırsa
+            if self.isToggleQuickSwitchEvent(event) {
+                Task { @MainActor in
+                    self.toggleQuickSwitch()
+                }
+                return nil
+            }
+
+            // ESC → Aktif paneli kapat
             if event.keyCode == 53 {
                 Task { @MainActor in
                     self.overlayWindow?.orderOut(nil)
@@ -264,4 +298,10 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             return event
         }
     }
+}
+
+/// Klavye olaylarını tam yakalayabilen borderless NSPanel
+fileprivate final class KeyableQuickSwitchPanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
 }

@@ -100,6 +100,25 @@ public struct MainOverlayView: View {
 
             // Hızlı Eylemler (Session + Yenile + Kapat)
             HStack(spacing: 8) {
+                // Quick Switcher
+                Button(action: {
+                    (NSApplication.shared.delegate as? AppDelegate)?.toggleQuickSwitch()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "square.2.layers.3d")
+                            .font(.system(size: 11, weight: .semibold))
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(LinearGradient(colors: [.blue, .cyan], startPoint: .leading, endPoint: .trailing))
+                    )
+                }
+                .buttonStyle(.plain)
+                .help("Hızlı Pencere Değiştirici (⌥+S veya ⌥+Tab)")
+
                 // Session Manager
                 Button(action: { showingSessionSheet.toggle() }) {
                     HStack(spacing: 4) {
@@ -119,7 +138,7 @@ public struct MainOverlayView: View {
                     )
                 }
                 .buttonStyle(.plain)
-                .help("Kaydedilmiş Düzenler")
+                .help("Kaydedilmiş Düzenler (Çalışma Alanları)")
                 .popover(isPresented: $showingSessionSheet, arrowEdge: .bottom) {
                     SessionManagerView()
                 }

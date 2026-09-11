@@ -1,208 +1,316 @@
 import SwiftUI
 
-/// Spotlight tarzı hızlı pencere geçiş paneli
-/// ⌥+Tab ile açılır, ESC veya Enter ile kapanır
+/// Hızlı Pencere Değiştirici (Quick Window Switcher)
+/// Sol-Sağ ve Yukarı-Aşağı yön tuşlarıyla veya Tab ile pencereler arasında gezinilir,
+/// Enter ile seçilen pencereye zıplanır, ESC ile kapatılır.
 public struct QuickSwitchView: View {
     @ObservedObject var windowManager: WindowManager = .shared
-    @State private var query: String = ""
     @State private var selectedIndex: Int = 0
-    @FocusState private var isSearchFocused: Bool
+    @State private var searchText: String = ""
 
-    /// Panel kapanma callback'i
     public var onDismiss: () -> Void
 
     public init(onDismiss: @escaping () -> Void) {
         self.onDismiss = onDismiss
     }
 
-    private var results: [WindowItem] {
-        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        if q.isEmpty { return Array(windowManager.windows.prefix(8)) }
+    private var displayWindows: [WindowItem] {
+        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            return windowManager.windows
+        }
         return windowManager.windows.filter {
-            $0.windowTitle.localizedCaseInsensitiveContains(q) ||
-            $0.appName.localizedCaseInsensitiveContains(q)
+            $0.windowTitle.localizedCaseInsensitiveContains(trimmed) ||
+            $0.appName.localizedCaseInsensitiveContains(trimmed)
         }
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            // Arama Çubuğu
+        VStack(spacing: 14) {
+            // Üst Başlık & Arama / Bilgi Barı
             HStack(spacing: 10) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 16, weight: .medium))
+                Image(systemName: "square.2.layers.3d")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(.blue)
+
+                Text("Hızlı Pencere Geçişi")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(.primary)
+
+                Spacer()
+
+                Text("\(displayWindows.count) Açık Pencere")
+                    .font(.system(size: 11, weight: .medium))
                     .foregroundColor(.secondary)
-
-                TextField("Pencereye geç...", text: $query)
-                    .textFieldStyle(.plain)
-                    .font(.system(size: 16))
-                    .focused($isSearchFocused)
-                    .onSubmit { activateSelected() }
-
-                if !query.isEmpty {
-                    Button(action: { query = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.secondary)
-                    }
-                    .buttonStyle(.plain)
-                }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, 18)
+            .padding(.top, 14)
 
-            if !results.isEmpty {
-                Divider().opacity(0.3)
-
-                // Sonuçlar Listesi
-                ScrollView(.vertical, showsIndicators: false) {
-                    LazyVStack(spacing: 2) {
-                        ForEach(Array(results.enumerated()), id: \.element.id) { idx, item in
-                            QuickSwitchRow(
-                                item: item,
-                                isSelected: idx == selectedIndex,
-                                shortcutNumber: idx < 9 ? idx + 1 : nil
-                            )
-                            .onTapGesture {
-                                selectedIndex = idx
-                                activateItem(item)
+            // Pencerelerin Kare Önizleme Kartları (Yatay Kaydırılabilir Grid)
+            if displayWindows.isEmpty {
+                VStack(spacing: 8) {
+                    Image(systemName: "macwindow.on.rectangle")
+                        .font(.system(size: 32))
+                        .foregroundColor(.secondary.opacity(0.6))
+                    Text("Açık pencere bulunamadı")
+                        .font(.system(size: 13))
+                        .foregroundColor(.secondary)
+                }
+                .frame(height: 170)
+            } else {
+                ScrollViewReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 14) {
+                            ForEach(Array(displayWindows.enumerated()), id: \.element.id) { index, item in
+                                QuickSwitchCard(
+                                    item: item,
+                                    isSelected: index == selectedIndex
+                                )
+                                .id(index)
+                                .onTapGesture {
+                                    selectedIndex = index
+                                    activateWindow(item)
+                                }
                             }
                         }
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 8)
                     }
-                    .padding(.vertical, 6)
-                    .padding(.horizontal, 8)
+                    .onChange(of: selectedIndex) {
+                        withAnimation(.easeInOut(duration: 0.18)) {
+                            proxy.scrollTo(selectedIndex, anchor: .center)
+                        }
+                    }
                 }
-                .frame(maxHeight: 340)
+                .frame(height: 175)
             }
 
-            // Kısayol ipuçları
-            HStack(spacing: 16) {
-                Label("Seç", systemImage: "return")
-                Label("Kapat", systemImage: "escape")
-                Label("Gezin", systemImage: "arrowkeys")
+            // Seçili Pencere Detay Başlığı
+            if !displayWindows.isEmpty && selectedIndex < displayWindows.count {
+                let current = displayWindows[selectedIndex]
+                HStack(spacing: 8) {
+                    if let icon = current.appIcon {
+                        Image(nsImage: icon)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 18, height: 18)
+                    }
+
+                    Text(current.appName)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(current.colorTint)
+
+                    Text("—")
+                        .foregroundColor(.secondary)
+
+                    Text(current.windowTitle)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                }
+                .padding(.horizontal, 18)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            Divider()
+                .opacity(0.25)
+                .padding(.horizontal, 14)
+
+            // Alt Bilgi / Kısayol İpuçları
+            HStack(spacing: 20) {
+                HStack(spacing: 4) {
+                    Text("← → / ↑ ↓")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Color.white.opacity(0.12))
+                        .cornerRadius(4)
+                    Text("Gezin")
+                }
+
+                HStack(spacing: 4) {
+                    Text("Tab")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Color.white.opacity(0.12))
+                        .cornerRadius(4)
+                    Text("Sonraki")
+                }
+
+                HStack(spacing: 4) {
+                    Text("Enter ↵")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Color.blue.opacity(0.35))
+                        .cornerRadius(4)
+                    Text("Pencereye Geç")
+                }
+
+                HStack(spacing: 4) {
+                    Text("ESC")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Color.white.opacity(0.12))
+                        .cornerRadius(4)
+                    Text("Kapat")
+                }
             }
             .font(.system(size: 10))
-            .foregroundColor(.secondary.opacity(0.7))
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            .foregroundColor(.secondary)
+            .padding(.bottom, 12)
         }
+        .frame(width: 620)
         .background(VisualEffectBackground(material: .hudWindow, blendingMode: .behindWindow))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.15), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(LinearGradient(colors: [Color.white.opacity(0.25), Color.white.opacity(0.08)], startPoint: .top, endPoint: .bottom), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.4), radius: 24, x: 0, y: 12)
-        .frame(width: 460)
+        .shadow(color: .black.opacity(0.55), radius: 30, x: 0, y: 15)
         .onAppear {
-            isSearchFocused = true
+            windowManager.refreshWindows()
             selectedIndex = 0
         }
-        .onChange(of: query) {
-            selectedIndex = 0
+        // Klavye kontrolü: Oklar, Tab, Return, ESC
+        .onKeyPress(.leftArrow) {
+            selectPrevious()
+            return .handled
         }
-        // Klavye yönlendirmesi
         .onKeyPress(.upArrow) {
-            if selectedIndex > 0 { selectedIndex -= 1 }
+            selectPrevious()
+            return .handled
+        }
+        .onKeyPress(.rightArrow) {
+            selectNext()
             return .handled
         }
         .onKeyPress(.downArrow) {
-            if selectedIndex < results.count - 1 { selectedIndex += 1 }
+            selectNext()
+            return .handled
+        }
+        .onKeyPress(.tab) {
+            selectNext()
+            return .handled
+        }
+        .onKeyPress(.return) {
+            confirmSelection()
             return .handled
         }
         .onKeyPress(.escape) {
             onDismiss()
             return .handled
         }
-        .onKeyPress(.return) {
-            activateSelected()
+        .onKeyPress(.space) {
+            confirmSelection()
             return .handled
         }
     }
 
-    private func activateSelected() {
-        guard selectedIndex < results.count else { return }
-        activateItem(results[selectedIndex])
+    private func selectNext() {
+        guard !displayWindows.isEmpty else { return }
+        if selectedIndex < displayWindows.count - 1 {
+            selectedIndex += 1
+        } else {
+            selectedIndex = 0 // Başa sar
+        }
     }
 
-    private func activateItem(_ item: WindowItem) {
+    private func selectPrevious() {
+        guard !displayWindows.isEmpty else { return }
+        if selectedIndex > 0 {
+            selectedIndex -= 1
+        } else {
+            selectedIndex = displayWindows.count - 1 // Sona sar
+        }
+    }
+
+    private func confirmSelection() {
+        guard !displayWindows.isEmpty, selectedIndex < displayWindows.count else {
+            onDismiss()
+            return
+        }
+        activateWindow(displayWindows[selectedIndex])
+    }
+
+    private func activateWindow(_ item: WindowItem) {
         windowManager.focusWindow(item)
         onDismiss()
     }
 }
 
-// MARK: - Row
+// MARK: - Kare Görünür Thumbnail Kartı
 
-private struct QuickSwitchRow: View {
+private struct QuickSwitchCard: View {
     let item: WindowItem
     let isSelected: Bool
-    let shortcutNumber: Int?
 
     var body: some View {
-        HStack(spacing: 10) {
-            // App İkonu
-            Group {
+        VStack(spacing: 6) {
+            // Thumbnail / Ekran Görüntüsü Alanı
+            ZStack(alignment: .topLeading) {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color.black.opacity(0.45))
+                    .frame(width: 170, height: 110)
+
+                if let thumb = item.thumbnail {
+                    Image(nsImage: thumb)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 170, height: 110)
+                        .clipped()
+                        .cornerRadius(10)
+                } else {
+                    VStack(spacing: 4) {
+                        Image(systemName: "macwindow")
+                            .font(.system(size: 26))
+                            .foregroundColor(item.colorTint.opacity(0.8))
+                        Text(item.appName)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(width: 170, height: 110)
+                }
+
+                // Sol Üstte App İkonu Rozeti
                 if let icon = item.appIcon {
                     Image(nsImage: icon)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 28, height: 28)
-                } else {
-                    Image(systemName: "macwindow")
-                        .font(.system(size: 22))
-                        .foregroundColor(item.colorTint)
-                        .frame(width: 28, height: 28)
+                        .frame(width: 22, height: 22)
+                        .background(
+                            Circle()
+                                .fill(Color.black.opacity(0.6))
+                                .frame(width: 26, height: 26)
+                        )
+                        .padding(6)
                 }
             }
-
-            // Thumbnail mini
-            if let thumb = item.thumbnail {
-                Image(nsImage: thumb)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 52, height: 34)
-                    .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 5, style: .continuous)
-                            .strokeBorder(Color.white.opacity(0.1), lineWidth: 0.5)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(
+                        isSelected ? Color.blue : Color.white.opacity(0.12),
+                        lineWidth: isSelected ? 3 : 1
                     )
-            }
+            )
+            .shadow(
+                color: isSelected ? Color.blue.opacity(0.55) : Color.black.opacity(0.2),
+                radius: isSelected ? 10 : 4,
+                x: 0,
+                y: isSelected ? 4 : 2
+            )
+            .scaleEffect(isSelected ? 1.05 : 0.98)
+            .animation(.spring(response: 0.22, dampingFraction: 0.72), value: isSelected)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(item.windowTitle)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
-                Text(item.appName)
-                    .font(.system(size: 11))
-                    .foregroundColor(item.colorTint)
-                    .lineLimit(1)
-            }
-
-            Spacer()
-
-            if let num = shortcutNumber {
-                Text("⌘\(num)")
-                    .font(.system(size: 10, weight: .medium, design: .monospaced))
-                    .foregroundColor(.secondary.opacity(0.6))
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
-                    .background(
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color(nsColor: .controlBackgroundColor).opacity(0.4))
-                    )
-            }
+            // Başlık
+            Text(item.windowTitle.isEmpty ? item.appName : item.windowTitle)
+                .font(.system(size: 11, weight: isSelected ? .bold : .medium))
+                .foregroundColor(isSelected ? .white : .secondary)
+                .lineLimit(1)
+                .frame(width: 165)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(isSelected
-                      ? Color.blue.opacity(0.25)
-                      : Color.clear)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .strokeBorder(isSelected ? Color.blue.opacity(0.5) : Color.clear, lineWidth: 1)
-        )
         .contentShape(Rectangle())
     }
 }
