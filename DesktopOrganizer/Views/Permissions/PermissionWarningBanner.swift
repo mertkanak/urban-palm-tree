@@ -19,8 +19,8 @@ public struct PermissionWarningBanner: View {
                             .font(.system(size: 13, weight: .bold))
                             .foregroundColor(.primary)
 
-                        Text("Pencereleri öne getirmek, taşımak, boyutlandırmak ve canlı thumbnail görüntüleri almak için izinler gereklidir.")
-                            .font(.system(size: 11))
+                        Text("Pencereleri öne getirmek ve canlı önizlemeler için izinler gereklidir.\n⚠️ Ayarlarda zaten açık görünüyorsa: Anahtarı bir kez kapatıp tekrar açmanız yeterlidir.")
+                            .font(.system(size: 10.5))
                             .foregroundColor(.secondary)
                     }
 

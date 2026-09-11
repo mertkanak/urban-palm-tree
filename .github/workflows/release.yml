@@ -45,11 +45,11 @@ jobs:
       - name: Build with build.sh
         run: bash build.sh
 
-      # 6. .app'ı ZIP'le
+      # 6. .app'ı ZIP'le (Kod imzası ve dosya özniteliklerini tam korur)
       - name: Create ZIP
         run: |
           cd build
-          zip -r --symlinks DesktopOrganizer.zip DesktopOrganizer.app
+          ditto -c -k --sequesterRsrc --keepParent DesktopOrganizer.app DesktopOrganizer.zip
 
       # 7. GitHub Release oluştur ve ZIP'i yükle
       - name: Create GitHub Release
