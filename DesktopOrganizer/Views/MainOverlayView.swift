@@ -88,12 +88,13 @@ public struct MainOverlayView: View {
             Spacer()
 
             // Ana Sekmeler (Pencereler vs Masaüstü)
-            Picker("Mod", selection: $selectedTab) {
-                Text("Açık Pencereler (\(windowManager.windows.count))").tag(0)
-                Text("Masaüstü Dosyaları (\(iconManager.items.count))").tag(1)
+            Picker("", selection: $selectedTab) {
+                Text("Pencereler (\(windowManager.windows.count))").tag(0)
+                Text("Masaüstü (\(iconManager.items.count))").tag(1)
             }
             .pickerStyle(.segmented)
-            .frame(width: 340)
+            .labelsHidden()
+            .frame(width: 290)
 
             Spacer()
 

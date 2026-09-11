@@ -176,13 +176,50 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Global Kısayol Dinleyici
 
+    /// Ana panelin açılıp kapanmasını tetikleyen kısayolları kontrol eder
+    private func isToggleOverlayEvent(_ event: NSEvent) -> Bool {
+        // 1. ⌥ + Space (Option + Space: keyCode 49)
+        if event.modifierFlags.contains(.option) && event.keyCode == 49 {
+            return true
+        }
+
+        // 2. 'A' tuşu (keyCode 0) kombinasyonları
+        if event.keyCode == 0 {
+            let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+
+            // Caps Lock açıkken Shift + A
+            if flags.contains(.capsLock) && flags.contains(.shift) {
+                return true
+            }
+
+            // ⌃ + ⇧ + A (Control + Shift + A)
+            if flags.contains(.control) && flags.contains(.shift) {
+                return true
+            }
+
+            // ⌥ + ⇧ + A (Option + Shift + A)
+            if flags.contains(.option) && flags.contains(.shift) {
+                return true
+            }
+
+            // ⌥ + A (Option + A: tek elle sol parmakla tak diye açılan süper hızlı kısayol)
+            if flags.contains(.option) && !flags.contains(.command) {
+                return true
+            }
+        }
+
+        return false
+    }
+
     private func setupGlobalShortcut() {
         // Global monitor (uygulama arka plandayken)
         globalEventMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            // ⌥+Space → Ana panel aç/kapat
-            if event.modifierFlags.contains(.option) && event.keyCode == 49 {
+            // Ana panel kısayolu (⌥A, ⌥Space, Caps+Shift+A, ⌃⇧A, ⌥⇧A)
+            if self?.isToggleOverlayEvent(event) == true {
                 Task { @MainActor in self?.toggleOverlay() }
+                return
             }
+
             // ⌥+Tab → Quick Switch aç/kapat
             if event.modifierFlags.contains(.option) && event.keyCode == 48 {
                 Task { @MainActor in self?.toggleQuickSwitch() }
@@ -192,6 +229,14 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         // Local monitor (uygulama aktifken)
         localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return event }
+
+            // Ana panel kısayolu basılırsa kapat
+            if self.isToggleOverlayEvent(event) {
+                Task { @MainActor in
+                    self.toggleOverlay()
+                }
+                return nil
+            }
 
             // ESC → Overlay kapat
             if event.keyCode == 53 {
