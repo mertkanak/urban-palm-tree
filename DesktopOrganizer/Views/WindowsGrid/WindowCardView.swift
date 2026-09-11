@@ -96,9 +96,26 @@ public struct WindowCardView: View {
                         .menuStyle(.borderlessButton)
                         .frame(width: 22, height: 22)
 
-                        // Kapat (X) Butonu
+                        // Force Quit Butonu (Tamamen Kapat - Dock'tan Kaldır)
                         Button(action: {
-                            windowManager.closeWindow(item)
+                            windowManager.forceQuitApp(item)
+                        }) {
+                            Image(systemName: "xmark.octagon.fill")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(.white)
+                                .frame(width: 22, height: 22)
+                                .background(Circle().fill(Color.purple.opacity(0.9)))
+                        }
+                        .buttonStyle(.plain)
+                        .help("\(item.appName) Uygulamasını Tamamen Zorla Kapat (Force Quit - Dock'ta Kalmaz)")
+
+                        // Kapat (X) Butonu (⌥ ile tıklanırsa da Force Quit yapar)
+                        Button(action: {
+                            if NSEvent.modifierFlags.contains(.option) {
+                                windowManager.forceQuitApp(item)
+                            } else {
+                                windowManager.closeWindow(item)
+                            }
                         }) {
                             Image(systemName: "xmark")
                                 .font(.system(size: 10, weight: .bold))
@@ -107,7 +124,7 @@ public struct WindowCardView: View {
                                 .background(Circle().fill(Color.red.opacity(0.85)))
                         }
                         .buttonStyle(.plain)
-                        .help("Pencereyi Kapat")
+                        .help("Pencereyi Kapat (⌥ Tıklama: Tamamen Force Quit)")
                     }
                     .padding(8)
                     .transition(.opacity.combined(with: .scale(scale: 0.9)))

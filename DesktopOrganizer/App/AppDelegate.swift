@@ -72,6 +72,10 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
         menu.addItem(NSMenuItem.separator())
 
+        let forceQuitAllItem = NSMenuItem(title: "Tüm Açık Uygulamaları Kapat (⌥+⇧+Q)", action: #selector(forceQuitAllClicked), keyEquivalent: "")
+        forceQuitAllItem.target = self
+        menu.addItem(forceQuitAllItem)
+
         let quitItem = NSMenuItem(title: "Çıkış", action: #selector(quitApp), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
@@ -88,6 +92,10 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc public func toggleDesktopIcons() {
         DesktopIconManager.shared.toggleDesktopIcons()
+    }
+
+    @objc private func forceQuitAllClicked() {
+        WindowManager.shared.forceQuitAllApps()
     }
 
     @objc public func quitApp() {
@@ -241,9 +249,23 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         return false
     }
 
+    /// Toplu Force Quit kısayolunu kontrol eder (⌥ + ⇧ + Q)
+    private func isForceQuitAllEvent(_ event: NSEvent) -> Bool {
+        // 'Q' tuşu keyCode: 12
+        guard event.keyCode == 12 else { return false }
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        return flags.contains(.option) && flags.contains(.shift)
+    }
+
     private func setupGlobalShortcut() {
         // Global monitor (uygulama arka plandayken)
         globalEventMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            // Toplu Force Quit kısayolu (⌥ + ⇧ + Q)
+            if self?.isForceQuitAllEvent(event) == true {
+                Task { @MainActor in WindowManager.shared.forceQuitAllApps() }
+                return
+            }
+
             // Ana panel kısayolu (⌥A, ⌥Space, Caps+Shift+A, ⌃⇧A, ⌥⇧A)
             if self?.isToggleOverlayEvent(event) == true {
                 Task { @MainActor in self?.toggleOverlay() }
@@ -260,6 +282,12 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         // Local monitor (uygulama aktifken)
         localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return event }
+
+            // Toplu Force Quit kısayolu (⌥ + ⇧ + Q)
+            if self.isForceQuitAllEvent(event) {
+                Task { @MainActor in WindowManager.shared.forceQuitAllApps() }
+                return nil
+            }
 
             // Eğer Quick Switch paneli açıksa ESC ile hemen kapat
             if self.quickSwitchPanel?.isVisible == true && event.keyCode == 53 {
@@ -303,6 +331,12 @@ fileprivate final class KeyableQuickSwitchPanel: NSPanel {
             // ESC (53)
             if event.keyCode == 53 {
                 QuickSwitchManager.shared.dismiss()
+                return
+            }
+
+            // Q (12) veya ⌘+Q: Seçili uygulamaya anında Force Quit at
+            if event.keyCode == 12 || (event.keyCode == 51 && event.modifierFlags.contains(.command)) {
+                QuickSwitchManager.shared.forceQuitSelected()
                 return
             }
 

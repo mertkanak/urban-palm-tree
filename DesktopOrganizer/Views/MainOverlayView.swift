@@ -190,6 +190,33 @@ public struct MainOverlayView: View {
                 .buttonStyle(.bordered)
                 .help("Tümünü Yenile")
 
+                // Tüm Açık Uygulamaları Force Quit Yap Butonu
+                Button(action: {
+                    windowManager.forceQuitAllApps()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "xmark.octagon.fill")
+                            .font(.system(size: 11, weight: .semibold))
+                        Text("Tümünü Kapat")
+                            .font(.system(size: 11, weight: .semibold))
+                        Text("⌥⇧Q")
+                            .font(.system(size: 9, weight: .bold, design: .monospaced))
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 1)
+                            .background(Color.white.opacity(0.2))
+                            .cornerRadius(4)
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(Color.red.opacity(0.85))
+                    )
+                }
+                .buttonStyle(.plain)
+                .help("Açık olan tüm uygulamaları tamamen zorla kapat (Force Quit All - ⌥⇧Q)")
+
                 Button(action: {
                     NSApplication.shared.hide(nil)
                 }) {

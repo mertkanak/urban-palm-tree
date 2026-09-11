@@ -242,6 +242,47 @@ public final class WindowManager: ObservableObject {
         }
     }
 
+    /// Seçili uygulamanın sürecini tamamen zorla kapatır (Force Quit) - Dock'tan ve arka plandan silinir
+    public func forceQuitApp(_ item: WindowItem) {
+        forceQuitPid(item.pid)
+    }
+
+    /// Belirtilen PID'ye sahip uygulamayı tamamen zorla kapatır
+    public func forceQuitPid(_ pid: pid_t) {
+        if let app = NSRunningApplication(processIdentifier: pid) {
+            app.forceTerminate()
+        } else {
+            kill(pid, SIGKILL)
+        }
+        // O uygulamaya ait tüm pencereleri listeden anında kaldır
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            self.windows.removeAll(where: { $0.pid == pid })
+        }
+    }
+
+    /// Açık olan tüm kullanıcı uygulamalarını zorla kapatır (DesktopOrganizer ve Finder hariç)
+    public func forceQuitAllApps() {
+        let myPid = ProcessInfo.processInfo.processIdentifier
+        let runningApps = NSWorkspace.shared.runningApplications
+        for app in runningApps {
+            // Sadece normal kullanıcı uygulamalarını kapat (Dock'ta yer alan standart uygulamalar)
+            guard app.activationPolicy == .regular,
+                  app.processIdentifier != myPid,
+                  app.bundleIdentifier != "com.apple.finder" else {
+                continue
+            }
+            app.forceTerminate()
+        }
+        // Listeden anında DesktopOrganizer dışındaki pencereleri kaldır
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            self.windows.removeAll(where: { $0.pid != myPid })
+        }
+        // 0.4 saniye sonra pencereleri sistemden yeniden doğrula
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+            self?.refreshWindows()
+        }
+    }
+
     /// Seçili pencereyi küçültür
     public func minimizeWindow(_ item: WindowItem) {
         accessibilityManager.minimizeWindow(pid: item.pid, windowId: item.id, title: item.windowTitle)

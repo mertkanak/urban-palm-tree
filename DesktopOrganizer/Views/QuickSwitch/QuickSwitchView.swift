@@ -132,6 +132,16 @@ public struct QuickSwitchView: View {
                 }
 
                 HStack(spacing: 4) {
+                    Text("Q")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Color.red.opacity(0.35))
+                        .cornerRadius(4)
+                    Text("Force Quit")
+                }
+
+                HStack(spacing: 4) {
                     Text("ESC")
                         .font(.system(size: 10, weight: .bold, design: .monospaced))
                         .padding(.horizontal, 5)

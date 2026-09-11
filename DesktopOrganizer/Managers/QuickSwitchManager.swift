@@ -51,6 +51,20 @@ public final class QuickSwitchManager: ObservableObject {
         dismiss()
     }
 
+    /// Seçili pencerenin uygulamasını tamamen zorla kapatır (Force Quit)
+    public func forceQuitSelected() {
+        guard !windows.isEmpty, selectedIndex < windows.count else { return }
+        let target = windows[selectedIndex]
+        WindowManager.shared.forceQuitApp(target)
+        self.windows.removeAll(where: { $0.pid == target.pid })
+        if selectedIndex >= self.windows.count {
+            selectedIndex = max(0, self.windows.count - 1)
+        }
+        if self.windows.isEmpty {
+            dismiss()
+        }
+    }
+
     public func dismiss() {
         isVisible = false
         onDismiss?()

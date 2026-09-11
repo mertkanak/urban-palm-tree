@@ -78,14 +78,34 @@ public struct WindowMiniCardView: View {
                     VStack {
                         HStack {
                             Spacer()
-                            Button(action: { windowManager.closeWindow(item) }) {
-                                Image(systemName: "xmark")
-                                    .font(.system(size: 8, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .frame(width: 16, height: 16)
-                                    .background(Circle().fill(Color.red.opacity(0.85)))
+                            HStack(spacing: 3) {
+                                // Force Quit Butonu
+                                Button(action: { windowManager.forceQuitApp(item) }) {
+                                    Image(systemName: "xmark.octagon.fill")
+                                        .font(.system(size: 8, weight: .bold))
+                                        .foregroundColor(.white)
+                                        .frame(width: 16, height: 16)
+                                        .background(Circle().fill(Color.purple.opacity(0.9)))
+                                }
+                                .buttonStyle(.plain)
+                                .help("\(item.appName) Uygulamasını Tamamen Kapat (Force Quit)")
+                                // Pencere Kapat (X) Butonu
+                                Button(action: {
+                                    if NSEvent.modifierFlags.contains(.option) {
+                                        windowManager.forceQuitApp(item)
+                                    } else {
+                                        windowManager.closeWindow(item)
+                                    }
+                                }) {
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 8, weight: .bold))
+                                        .foregroundColor(.white)
+                                        .frame(width: 16, height: 16)
+                                        .background(Circle().fill(Color.red.opacity(0.85)))
+                                }
+                                .buttonStyle(.plain)
+                                .help("Pencereyi Kapat (⌥ ile Force Quit)")
                             }
-                            .buttonStyle(.plain)
                             .padding(5)
                         }
                         Spacer()
