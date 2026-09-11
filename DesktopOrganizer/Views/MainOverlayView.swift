@@ -1,0 +1,181 @@
+import SwiftUI
+
+/// Uygulamanın ana overlay penceresi ve sekmeler arası yönlendirme görünümü
+public struct MainOverlayView: View {
+    @State private var selectedTab: Int = 0
+    @State private var showingSessionSheet: Bool = false
+    @ObservedObject var windowManager: WindowManager = .shared
+    @ObservedObject var iconManager: DesktopIconManager = .shared
+    @ObservedObject var permissionManager: PermissionManager = .shared
+    @ObservedObject var sessionManager: SessionManager = .shared
+    @ObservedObject var updater: AutoUpdater = .shared
+
+    public init() {}
+
+    public var body: some View {
+        ZStack {
+            // 1. Buzlu Cam Arka Planı (macOS Vibrancy)
+            VisualEffectBackground(material: .hudWindow, blendingMode: .behindWindow)
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                // 2. Üst Ana Başlık ve Kontrol Alanı
+                headerView
+
+                Divider()
+                    .opacity(0.3)
+
+                // 3. Güncelleme Bannerı (varsa)
+                UpdateBannerView()
+                    .animation(.spring(response: 0.4), value: updater.updateAvailable)
+
+                // 4. Sistem İzin Uyardı (Eksik İzin Varsa)
+                PermissionWarningBanner()
+
+                // 4. Seçili Sekme İçeriği
+                if selectedTab == 0 {
+                    VStack(spacing: 0) {
+                        WindowSearchBar()
+                        WindowGridView()
+                    }
+                } else {
+                    DesktopOrganizerView()
+                }
+
+                Divider()
+                    .opacity(0.3)
+
+                // 5. Alt Bilgi / Durum Çubuğu
+                statusBarView
+            }
+        }
+        .frame(minWidth: 900, minHeight: 650)
+    }
+
+    // MARK: - Üst Başlık & Sekmeler
+
+    private var headerView: some View {
+        HStack(spacing: 16) {
+            // Logo ve Başlık
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.blue, Color.purple],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 32, height: 32)
+
+                    Image(systemName: "macwindow.on.rectangle")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(.white)
+                }
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Desktop Organizer")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.primary)
+
+                    Text("Pencere & Masaüstü Yöneticisi")
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Spacer()
+
+            // Ana Sekmeler (Pencereler vs Masaüstü)
+            Picker("Mod", selection: $selectedTab) {
+                Text("Açık Pencereler (\(windowManager.windows.count))").tag(0)
+                Text("Masaüstü Dosyaları (\(iconManager.items.count))").tag(1)
+            }
+            .pickerStyle(.segmented)
+            .frame(width: 340)
+
+            Spacer()
+
+            // Hızlı Eylemler (Session + Yenile + Kapat)
+            HStack(spacing: 8) {
+                // Session Manager
+                Button(action: { showingSessionSheet.toggle() }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "bookmark.fill")
+                            .font(.system(size: 11, weight: .semibold))
+                        if !sessionManager.sessions.isEmpty {
+                            Text("\(sessionManager.sessions.count)")
+                                .font(.system(size: 10, weight: .bold))
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(LinearGradient(colors: [.purple, .indigo], startPoint: .leading, endPoint: .trailing))
+                    )
+                }
+                .buttonStyle(.plain)
+                .help("Kaydedilmiş Düzenler")
+                .popover(isPresented: $showingSessionSheet, arrowEdge: .bottom) {
+                    SessionManagerView()
+                }
+
+                Button(action: {
+                    windowManager.refreshWindows()
+                    iconManager.refreshFiles()
+                    permissionManager.checkPermissions()
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .buttonStyle(.bordered)
+                .help("Tümünü Yenile")
+
+                Button(action: {
+                    NSApplication.shared.hide(nil)
+                }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .bold))
+                }
+                .buttonStyle(.bordered)
+                .help("Paneli Gizle (Menü çubuğundan veya kısayolla tekrar açılabilir)")
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+    }
+
+    // MARK: - Alt Durum Çubuğu
+
+    private var statusBarView: some View {
+        HStack(spacing: 16) {
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(permissionManager.state.allGranted ? Color.green : Color.orange)
+                    .frame(width: 7, height: 7)
+
+                Text(permissionManager.state.allGranted ? "Sistem İzinleri Etkin" : "Bazı İzinler Eksik")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            Text("İpucu: Karta tıklayarak öne getirebilir, sürükleyerek masaüstünde konumlandırabilirsiniz.")
+                .font(.system(size: 11))
+                .foregroundColor(.secondary.opacity(0.8))
+
+            Spacer()
+
+            Text("macOS 14+ • Swift Concurrency")
+                .font(.system(size: 11))
+                .foregroundColor(.secondary.opacity(0.6))
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 8)
+        .background(Color(nsColor: .windowBackgroundColor).opacity(0.3))
+    }
+}
