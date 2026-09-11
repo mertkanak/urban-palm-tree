@@ -37,6 +37,7 @@ SOURCES=(
     "DesktopOrganizer/Views/Components/VisualEffectBackground.swift"
     "DesktopOrganizer/Views/Components/CardHoverEffect.swift"
     "DesktopOrganizer/Views/Components/UpdateBannerView.swift"
+    "DesktopOrganizer/Views/Components/CustomIcons.swift"
     "DesktopOrganizer/Views/Permissions/PermissionWarningBanner.swift"
     "DesktopOrganizer/Views/WindowsGrid/WindowSearchBar.swift"
     "DesktopOrganizer/Views/WindowsGrid/WindowCardView.swift"
@@ -76,14 +77,20 @@ TMPDIR="$TMP_DIR" swiftc \
 # Geçici derleme önbelleğini temizle (disk tasarrufu için)
 rm -rf "$TMP_DIR"
 
-# 3. Info.plist ve Entitlements kopyala
-echo "-> Paket dosyaları ve Info.plist hazırlanıyor..."
+# 3. Info.plist, Kaynaklar ve İkonları kopyala
+echo "-> Paket dosyaları, ikonlar ve Info.plist hazırlanıyor..."
 cp "DesktopOrganizer/Resources/Info.plist" "$CONTENTS_DIR/Info.plist"
 echo -n "APPL????" > "$CONTENTS_DIR/PkgInfo"
+cp DesktopOrganizer/Resources/*.icns "$RESOURCES_DIR/" 2>/dev/null || true
+cp DesktopOrganizer/Resources/*.png "$RESOURCES_DIR/" 2>/dev/null || true
 
-# 4. Kod İmzalama (Ad-hoc)
-echo "-> Uygulama imzalanıyor (ad-hoc codesign)..."
-codesign --force --deep --sign - --entitlements "DesktopOrganizer/Resources/DesktopOrganizer.entitlements" "$APP_BUNDLE" 2>/dev/null || true
+# 4. Kod İmzalama (Stabil Designated Requirement ile TCC İzinlerini Koruma)
+echo "-> Uygulama imzalanıyor (sabit identifier ve designated requirement ile)..."
+codesign --force --deep -s - \
+    --identifier "com.mertkanak.desktoporganizer" \
+    --requirements '=designated => identifier "com.mertkanak.desktoporganizer"' \
+    --entitlements "DesktopOrganizer/Resources/DesktopOrganizer.entitlements" \
+    "$APP_BUNDLE" 2>/dev/null || codesign --force --deep -s - --entitlements "DesktopOrganizer/Resources/DesktopOrganizer.entitlements" "$APP_BUNDLE"
 
 echo ""
 echo " Derleme başarıyla tamamlandı!"

@@ -62,16 +62,14 @@ public struct MainOverlayView: View {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .fill(
                             LinearGradient(
-                                colors: [Color.blue, Color.purple],
+                                colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
                         .frame(width: 32, height: 32)
 
-                    Image(systemName: "macwindow.on.rectangle")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.white)
+                    MonitorIconView(size: 22)
                 }
 
                 VStack(alignment: .leading, spacing: 1) {
@@ -87,14 +85,52 @@ public struct MainOverlayView: View {
 
             Spacer()
 
-            // Ana Sekmeler (Pencereler vs Masaüstü)
-            Picker("", selection: $selectedTab) {
-                Text("Pencereler (\(windowManager.windows.count))").tag(0)
-                Text("Masaüstü (\(iconManager.items.count))").tag(1)
+            // Ana Sekmeler (Pencereler vs Çekmece/Masaüstü)
+            HStack(spacing: 4) {
+                // 1. Sekme: Pencereler
+                Button(action: { withAnimation(.easeInOut(duration: 0.2)) { selectedTab = 0 } }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "macwindow.on.rectangle")
+                            .font(.system(size: 13, weight: selectedTab == 0 ? .bold : .regular))
+                        Text("Pencereler (\(windowManager.windows.count))")
+                            .font(.system(size: 12, weight: selectedTab == 0 ? .bold : .medium))
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .foregroundColor(selectedTab == 0 ? .white : .secondary)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(selectedTab == 0 ? Color.blue.opacity(0.8) : Color.clear)
+                    )
+                }
+                .buttonStyle(.plain)
+
+                // 2. Sekme: Masaüstü (Kullanıcının verdiği Çekmece İkonu)
+                Button(action: { withAnimation(.easeInOut(duration: 0.2)) { selectedTab = 1 } }) {
+                    HStack(spacing: 6) {
+                        DrawerIconView(size: 15, color: selectedTab == 1 ? .white : .secondary)
+                        Text("Masaüstü (\(iconManager.items.count))")
+                            .font(.system(size: 12, weight: selectedTab == 1 ? .bold : .medium))
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .foregroundColor(selectedTab == 1 ? .white : .secondary)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(selectedTab == 1 ? Color.purple.opacity(0.8) : Color.clear)
+                    )
+                }
+                .buttonStyle(.plain)
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .frame(width: 290)
+            .padding(3)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color(nsColor: .controlBackgroundColor).opacity(0.35))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
+            )
 
             Spacer()
 
