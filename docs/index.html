@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desktop Organizer — Smart Window & Desktop Manager for macOS</title>
+  <meta name="description" content="Supercharge your Mac workflow with Desktop Organizer. Instant window tiling, visual ⌥Tab quick switcher HUD, 1-click desktop auto-cleaner, and saved workspace sessions.">
+  <meta name="keywords" content="macOS window manager, desktop organizer, mac quick switcher, mac force quit, mac workspace manager, macos sonoma, macos sequoia">
+  
+  <!-- OpenGraph / Social Cards -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Desktop Organizer — Smart Window & Desktop Manager for macOS">
+  <meta property="og:description" content="Instant window tiling, ⌥Tab quick switcher HUD, 1-click desktop cleaner, and saved workspaces. Verified & Notarized by Apple.">
+  <meta property="og:image" content="assets/app-icon.png">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/app-icon.png">
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Glow & Grid Orbs -->
+  <div class="glow-sphere sphere-1"></div>
+  <div class="glow-sphere sphere-2"></div>
+  <div class="glow-sphere sphere-3"></div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-brand">
+        <img src="assets/app-icon.png" alt="Desktop Organizer Logo" class="brand-logo">
+        <span class="brand-name">Desktop Organizer</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features" data-i18n="navFeatures">Features</a>
+        <a href="#quick-switch" data-i18n="navQuickSwitch">Quick Switch</a>
+        <a href="#desktop-clean" data-i18n="navDesktopClean">Desktop Clean</a>
+        <a href="#workspaces" data-i18n="navWorkspaces">Workspaces</a>
+        <a href="#faq" data-i18n="navFaq">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Language Switcher Pill -->
+        <button id="lang-toggle" class="lang-toggle-btn" aria-label="Switch Language">
+          <span class="lang-flag">🇺🇸</span>
+          <span class="lang-text">EN</span>
+        </button>
+
+        <a href="https://github.com/mertkanak/urban-palm-tree" target="_blank" rel="noopener noreferrer" class="btn-github-nav" title="View Source on GitHub">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+
+        <a href="https://github.com/mertkanak/urban-palm-tree/releases/latest/download/DesktopOrganizer.zip" class="btn-primary btn-nav-cta">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span data-i18n="downloadBtnNav">Download</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <!-- Apple Notarized Badge -->
+      <div class="hero-badge">
+        <span class="badge-icon">🛡️</span>
+        <span data-i18n="heroBadge">Apple Notarized & Gatekeeper Safe • macOS 14+</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span data-i18n="heroTitlePart1">The Missing Window &</span><br>
+        <span class="gradient-text" data-i18n="heroTitlePart2">Desktop Manager for macOS</span>
+      </h1>
+
+      <p class="hero-description" data-i18n="heroDescription">
+        Supercharge your Mac workflow. Instant window tiling, lightning-fast visual ⌥Tab switcher HUD, 1-click messy desktop auto-cleaner, saved workspace layouts, and clean process Force Quit.
+      </p>
+
+      <!-- CTA Action Group -->
+      <div class="hero-cta-group">
+        <a href="https://github.com/mertkanak/urban-palm-tree/releases/latest/download/DesktopOrganizer.zip" class="btn-hero-primary" id="main-download-btn">
+          <div class="btn-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.63-.78 1.06-1.85.94-2.92-.92.04-2.03.62-2.69 1.4-.58.67-1.09 1.76-.95 2.8 1.03.08 2.07-.51 2.7-1.28z"/></svg>
+          </div>
+          <div class="btn-text-wrap">
+            <span class="btn-subtext" data-i18n="heroBtnSubtext">Free Download for macOS</span>
+            <span class="btn-maintext" data-i18n="heroBtnMaintext">Download Desktop Organizer</span>
+          </div>
+        </a>
+
+        <a href="https://github.com/mertkanak/urban-palm-tree" target="_blank" rel="noopener noreferrer" class="btn-hero-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span data-i18n="heroGithubBtn">Star on GitHub</span>
+        </a>
+      </div>
+
+      <!-- System Specs Pill -->
+      <div class="hero-specs">
+        <span>⚡ Apple Silicon (M1/M2/M3/M4) & Intel</span>
+        <span>•</span>
+        <span>🖥️ macOS 14.0+ Sonoma & Sequoia</span>
+        <span>•</span>
+        <span>🔒 100% Offline & Private</span>
+      </div>
+    </div>
+
+    <!-- Interactive App Mockup Window -->
+    <div class="hero-window-container">
+      <div class="mac-window">
+        <!-- Window Title Bar -->
+        <div class="mac-titlebar">
+          <div class="mac-traffic-lights">
+            <span class="traffic-light light-red"></span>
+            <span class="traffic-light light-yellow"></span>
+            <span class="traffic-light light-green"></span>
+          </div>
+
+          <div class="mac-tabs">
+            <button class="mac-tab active" data-mockup-tab="windows">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+              <span data-i18n="mockupTabWindows">Windows</span>
+            </button>
+            <button class="mac-tab" data-mockup-tab="quickswitch">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <span data-i18n="mockupTabQuickSwitch">Quick Switch (⌥Tab)</span>
+            </button>
+            <button class="mac-tab" data-mockup-tab="desktop">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <span data-i18n="mockupTabDesktop">Desktop Cleaner</span>
+            </button>
+          </div>
+
+          <div class="mac-window-actions">
+            <span class="lang-indicator">🇺🇸 EN</span>
+          </div>
+        </div>
+
+        <!-- Simulated App Content -->
+        <div class="mac-content-viewport">
+          <!-- View 1: Windows Grid -->
+          <div class="mockup-view active" id="view-windows">
+            <div class="mockup-toolbar">
+              <div class="mockup-search">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span data-i18n="mockupSearchPlaceholder">Search windows or apps...</span>
+              </div>
+              <div class="mockup-view-toggles">
+                <span class="view-pill active">◫ Large Cards</span>
+                <span class="view-pill">▦ Compact</span>
+                <span class="view-pill">☰ List</span>
+              </div>
+              <div class="mockup-count-badge">● 4 Open Windows</div>
+            </div>
+
+            <div class="mockup-grid">
+              <!-- Card 1: Xcode -->
+              <div class="mockup-card">
+                <div class="card-preview preview-xcode">
+                  <div class="code-lines">
+                    <div class="code-line w-70"></div>
+                    <div class="code-line w-90"></div>
+                    <div class="code-line w-50"></div>
+                  </div>
+                  <div class="card-hover-actions">
+                    <span class="snap-btn" title="Snap Left">◧</span>
+                    <span class="snap-btn" title="Maximize">⬚</span>
+                    <span class="snap-btn" title="Snap Right">◨</span>
+                    <span class="force-quit-btn" title="Force Quit">✕</span>
+                  </div>
+                </div>
+                <div class="card-meta">
+                  <div class="card-icon icon-xcode">🔨</div>
+                  <div class="card-info">
+                    <div class="card-title">DesktopOrganizer.swift</div>
+                    <div class="card-app">Xcode</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Safari -->
+              <div class="mockup-card">
+                <div class="card-preview preview-safari">
+                  <div class="web-hero-sim"></div>
+                  <div class="card-hover-actions">
+                    <span class="snap-btn">◧</span>
+                    <span class="snap-btn">⬚</span>
+                    <span class="snap-btn">◨</span>
+                    <span class="force-quit-btn">✕</span>
+                  </div>
+                </div>
+                <div class="card-meta">
+                  <div class="card-icon icon-safari">🧭</div>
+                  <div class="card-info">
+                    <div class="card-title">developer.apple.com</div>
+                    <div class="card-app">Safari</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Figma -->
+              <div class="mockup-card">
+                <div class="card-preview preview-figma">
+                  <div class="figma-shapes">
+                    <span class="f-box f-1"></span>
+                    <span class="f-box f-2"></span>
+                  </div>
+                  <div class="card-hover-actions">
+                    <span class="snap-btn">◧</span>
+                    <span class="snap-btn">⬚</span>
+                    <span class="snap-btn">◨</span>
+                    <span class="force-quit-btn">✕</span>
+                  </div>
+                </div>
+                <div class="card-meta">
+                  <div class="card-icon icon-figma">🎨</div>
+                  <div class="card-info">
+                    <div class="card-title">Desktop App Design System</div>
+                    <div class="card-app">Figma</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: Terminal -->
+              <div class="mockup-card">
+                <div class="card-preview preview-term">
+                  <div class="term-text">$ ./notarize.sh<br><span class="green">✓ Accepted by Apple!</span></div>
+                  <div class="card-hover-actions">
+                    <span class="snap-btn">◧</span>
+                    <span class="snap-btn">⬚</span>
+                    <span class="snap-btn">◨</span>
+                    <span class="force-quit-btn">✕</span>
+                  </div>
+                </div>
+                <div class="card-meta">
+                  <div class="card-icon icon-term">💻</div>
+                  <div class="card-info">
+                    <div class="card-title">zsh — 80x24</div>
+                    <div class="card-app">Terminal</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 2: Quick Switcher HUD -->
+          <div class="mockup-view" id="view-quickswitch">
+            <div class="hud-container">
+              <div class="hud-header">
+                <span>⚡ Quick Window Switcher</span>
+                <span class="hud-count">4 Windows</span>
+              </div>
+              <div class="hud-cards-row">
+                <div class="hud-card">
+                  <div class="hud-thumb hud-thumb-safari"></div>
+                  <div class="hud-label">Safari</div>
+                </div>
+                <div class="hud-card selected">
+                  <div class="hud-thumb hud-thumb-xcode"></div>
+                  <div class="hud-label">Xcode</div>
+                  <div class="hud-badge-enter">Enter ↵</div>
+                </div>
+                <div class="hud-card">
+                  <div class="hud-thumb hud-thumb-figma"></div>
+                  <div class="hud-label">Figma</div>
+                </div>
+                <div class="hud-card">
+                  <div class="hud-thumb hud-thumb-term"></div>
+                  <div class="hud-label">Terminal</div>
+                </div>
+              </div>
+              <div class="hud-footer">
+                <span><kbd>← →</kbd> Navigate</span>
+                <span><kbd>Tab</kbd> Next</span>
+                <span><kbd>Enter ↵</kbd> Switch</span>
+                <span><kbd class="red">Q</kbd> Force Quit</span>
+                <span><kbd>ESC</kbd> Close</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 3: Desktop Cleaner -->
+          <div class="mockup-view" id="view-desktop">
+            <div class="desktop-clean-bar">
+              <button class="btn-auto-clean">
+                <span>🪄</span>
+                <span data-i18n="mockupAutoCleanBtn">Organize Desktop Automatically</span>
+              </button>
+              <button class="btn-hide-icons">
+                <span data-i18n="mockupHideIconsBtn">Hide Desktop Icons</span>
+              </button>
+            </div>
+            <div class="category-stacks">
+              <div class="category-card">
+                <div class="cat-header">
+                  <span class="cat-icon">🖼️</span>
+                  <span class="cat-name">Images & Photos</span>
+                  <span class="cat-badge">14</span>
+                </div>
+                <div class="cat-files">screenshot_1.png, banner.jpg, logo.svg...</div>
+              </div>
+              <div class="category-card">
+                <div class="cat-header">
+                  <span class="cat-icon">📄</span>
+                  <span class="cat-name">Documents</span>
+                  <span class="cat-badge">8</span>
+                </div>
+                <div class="cat-files">Invoice-2026.pdf, Notes.docx, specs.md...</div>
+              </div>
+              <div class="category-card">
+                <div class="cat-header">
+                  <span class="cat-icon">📦</span>
+                  <span class="cat-name">Downloads & Archives</span>
+                  <span class="cat-badge">5</span>
+                </div>
+                <div class="cat-files">project-backup.zip, node-v20.pkg...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Features Section -->
+  <section class="features-section" id="features">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge" data-i18n="featBadge">BUILT FOR SPEED & PRODUCTIVITY</span>
+        <h2 class="section-title" data-i18n="featTitle">Everything you need to master your macOS screen</h2>
+        <p class="section-subtitle" data-i18n="featSubtitle">Stop hunting for lost windows or dealing with a messy desktop. Desktop Organizer puts complete control at your fingertips.</p>
+      </div>
+
+      <div class="bento-grid">
+        <!-- Feature 1: Window Grid -->
+        <div class="bento-card bento-wide">
+          <div class="bento-icon-pill icon-blue">◧</div>
+          <h3 data-i18n="f1Title">Smart Window Snapping & Tiling</h3>
+          <p data-i18n="f1Desc">Effortlessly snap any window to the left half, right half, center, or full screen. Keep important reference notes pinned on top of everything while you work.</p>
+          <div class="feature-tags">
+            <span>◧ Snap Left</span>
+            <span>◨ Snap Right</span>
+            <span>⬚ Maximize</span>
+            <span>📌 Pin on Top</span>
+          </div>
+        </div>
+
+        <!-- Feature 2: Quick Switcher HUD -->
+        <div class="bento-card" id="quick-switch">
+          <div class="bento-icon-pill icon-purple">⚡</div>
+          <h3 data-i18n="f2Title">Visual ⌥Tab Switcher HUD</h3>
+          <p data-i18n="f2Desc">Ditch the basic macOS app switcher. See live thumbnails of your windows. Navigate with arrow keys, press Enter to jump, or hit Q to instantly kill an app.</p>
+          <div class="feature-tags">
+            <span>⌥Tab / ⌃Tab</span>
+            <span>Instant Previews</span>
+          </div>
+        </div>
+
+        <!-- Feature 3: Desktop Auto-Clean -->
+        <div class="bento-card" id="desktop-clean">
+          <div class="bento-icon-pill icon-green">🪄</div>
+          <h3 data-i18n="f3Title">1-Click Desktop Organizer</h3>
+          <p data-i18n="f3Desc">Chaos on your desktop? One click categorizes everything into neat folders: Images, Documents, Archives, Applications, and Code. Or toggle desktop icons invisible for clean screen shares.</p>
+          <div class="feature-tags">
+            <span>Smart Categories</span>
+            <span>Hide Icons</span>
+          </div>
+        </div>
+
+        <!-- Feature 4: Saved Workspaces -->
+        <div class="bento-card bento-wide" id="workspaces">
+          <div class="bento-icon-pill icon-amber">🗂️</div>
+          <h3 data-i18n="f4Title">Saved Layout Workspaces (Sessions)</h3>
+          <p data-i18n="f4Desc">Do you arrange your screen for Coding, Research, or Video Editing? Save your window placements with one click. Switch between tasks and restore your entire window layout instantly.</p>
+          <div class="feature-tags">
+            <span>Layout Snapshots</span>
+            <span>Instant Restore</span>
+            <span>Multi-Monitor</span>
+          </div>
+        </div>
+
+        <!-- Feature 5: True Force Quit -->
+        <div class="bento-card">
+          <div class="bento-icon-pill icon-red">🛑</div>
+          <h3 data-i18n="f5Title">Instant Force Quit for Hanging Apps</h3>
+          <p data-i18n="f5Desc">Apps frozen or refusing to quit from the Dock? Option+Click any close button or hit ⌥⇧Q to forcefully terminate stubborn processes instantly.</p>
+          <div class="feature-tags">
+            <span>⌥⇧Q Shortcut</span>
+            <span>Dock Clean</span>
+          </div>
+        </div>
+
+        <!-- Feature 6: Privacy & Speed -->
+        <div class="bento-card">
+          <div class="bento-icon-pill icon-cyan">🔒</div>
+          <h3 data-i18n="f6Title">Zero Telemetry. 100% Native Swift</h3>
+          <p data-i18n="f6Desc">No Electron bloat. Crafted purely in native Swift 6 and SwiftUI. Runs with under 20MB of RAM, instant launch time, and zero telemetry.</p>
+          <div class="feature-tags">
+            <span>< 20MB RAM</span>
+            <span>Zero Tracking</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Section -->
+  <section class="comparison-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge" data-i18n="compBadge">WHY DESKTOP ORGANIZER?</span>
+        <h2 class="section-title" data-i18n="compTitle">Traditional macOS vs. Desktop Organizer</h2>
+      </div>
+
+      <div class="table-container">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th data-i18n="compColFeature">Workflow Capability</th>
+              <th class="col-dim" data-i18n="compColDefault">Default macOS</th>
+              <th class="col-highlight">Desktop Organizer ✨</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-i18n="compRow1">⌥Tab Visual Window Switcher with Previews</td>
+              <td class="col-dim">❌ Apps only, no window preview</td>
+              <td class="col-highlight">✅ Live thumbnails, arrow navigation, Q to quit</td>
+            </tr>
+            <tr>
+              <td data-i18n="compRow2">1-Click Snap Left / Right / Maximize / Pin</td>
+              <td class="col-dim">⚠️ Clunky green button hover</td>
+              <td class="col-highlight">✅ Fast hover controls & window cards</td>
+            </tr>
+            <tr>
+              <td data-i18n="compRow3">1-Click Messy Desktop File Categorization</td>
+              <td class="col-dim">❌ Manual dragging needed</td>
+              <td class="col-highlight">✅ Instant smart categorization</td>
+            </tr>
+            <tr>
+              <td data-i18n="compRow4">Save & Restore Window Workspace Layouts</td>
+              <td class="col-dim">❌ Not supported natively</td>
+              <td class="col-highlight">✅ Save named layouts & restore anytime</td>
+            </tr>
+            <tr>
+              <td data-i18n="compRow5">Fast Force Quit from Window Card / Dock</td>
+              <td class="col-dim">⚠️ 4-step Activity Monitor route</td>
+              <td class="col-highlight">✅ 1-click Option+Close or ⌥⇧Q</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to Install (3 Steps) -->
+  <section class="install-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge" data-i18n="installBadge">GET STARTED IN 30 SECONDS</span>
+        <h2 class="section-title" data-i18n="installTitle">Easy 3-step installation</h2>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h3 data-i18n="step1Title">Download ZIP</h3>
+          <p data-i18n="step1Desc">Click the download button to grab the official, notarized <code>DesktopOrganizer.zip</code> package.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h3 data-i18n="step2Title">Move to Applications</h3>
+          <p data-i18n="step2Desc">Extract the zip file and drag <code>DesktopOrganizer.app</code> into your macOS Applications folder.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h3 data-i18n="step3Title">Launch & Press ⌥A</h3>
+          <p data-i18n="step3Desc">Open the app, grant Accessibility permission once, and control your desktop from the menu bar or <code>⌥A</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" id="faq">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge" data-i18n="faqBadge">QUESTIONS & ANSWERS</span>
+        <h2 class="section-title" data-i18n="faqTitle">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-accordion">
+        <div class="faq-item">
+          <button class="faq-question">
+            <span data-i18n="faq1Q">Will macOS show an "Unidentified Developer" or Gatekeeper security warning?</span>
+            <span class="faq-arrow">+</span>
+          </button>
+          <div class="faq-answer">
+            <p data-i18n="faq1A"><strong>No!</strong> Desktop Organizer is officially signed with an Apple Developer ID and fully <strong>Notarized by Apple</strong>. Gatekeeper verifies it automatically, so you can open it with double-click without any security blocks.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span data-i18n="faq2Q">Which macOS versions and Mac models are supported?</span>
+            <span class="faq-arrow">+</span>
+          </button>
+          <div class="faq-answer">
+            <p data-i18n="faq2A">Desktop Organizer is built for macOS 14.0+ Sonoma and macOS 15.0+ Sequoia. It runs natively on both Apple Silicon (M1, M2, M3, M4) and Intel Macs.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span data-i18n="faq3Q">Why does Desktop Organizer require Accessibility permission?</span>
+            <span class="faq-arrow">+</span>
+          </button>
+          <div class="faq-answer">
+            <p data-i18n="faq3A">macOS requires Accessibility permissions so the app can bring windows into focus, reposition/tile windows when you click snap buttons, and trigger Force Quit commands. All data stays 100% on your local machine.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span data-i18n="faq4Q">How do automatic updates work?</span>
+            <span class="faq-arrow">+</span>
+          </button>
+          <div class="faq-answer">
+            <p data-i18n="faq4A">The app checks GitHub Releases in the background. When a new version is released, a green 🚀 banner appears in the app. One click downloads and restarts the app with the latest version.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span data-i18n="faq5Q">Is Desktop Organizer free and open source?</span>
+            <span class="faq-arrow">+</span>
+          </button>
+          <div class="faq-answer">
+            <p data-i18n="faq5A">Yes! Desktop Organizer is open source on GitHub. You can inspect the source code, contribute, or download and use it completely free.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Banner CTA -->
+  <section class="cta-banner-section">
+    <div class="cta-banner-card">
+      <div class="cta-glow"></div>
+      <img src="assets/app-icon.png" alt="Desktop Organizer" class="cta-banner-icon">
+      <h2 data-i18n="ctaBannerTitle">Ready to organize your Mac desktop?</h2>
+      <p data-i18n="ctaBannerSubtitle">Download Desktop Organizer today. Free, notarized, and open source.</p>
+      
+      <div class="cta-buttons">
+        <a href="https://github.com/mertkanak/urban-palm-tree/releases/latest/download/DesktopOrganizer.zip" class="btn-hero-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.63-.78 1.06-1.85.94-2.92-.92.04-2.03.62-2.69 1.4-.58.67-1.09 1.76-.95 2.8 1.03.08 2.07-.51 2.7-1.28z"/></svg>
+          <span data-i18n="ctaDownloadBtn">Download for macOS</span>
+        </a>
+      </div>
+
+      <div class="cta-subnote" data-i18n="ctaSubnote">
+        Requires macOS 14.0 Sonoma or newer • Apple Silicon & Intel
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="assets/app-icon.png" alt="Desktop Organizer" class="footer-logo">
+        <div>
+          <div class="footer-name">Desktop Organizer</div>
+          <div class="footer-desc" data-i18n="footerDesc">Smart Window & Desktop Organizer for macOS</div>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <a href="https://github.com/mertkanak/urban-palm-tree" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/mertkanak/urban-palm-tree/releases" target="_blank" rel="noopener noreferrer" data-i18n="footerReleases">Releases</a>
+        <a href="#features" data-i18n="navFeatures">Features</a>
+        <a href="#faq" data-i18n="navFaq">FAQ</a>
+      </div>
+
+      <div class="footer-credit">
+        <span data-i18n="footerCreatedBy">Crafted by</span> <strong>Mert Kanak</strong> • <span data-i18n="footerRights">All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
