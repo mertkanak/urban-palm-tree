@@ -16,6 +16,7 @@ const translations = {
 
     // Hero Section
     heroBadge: "Apple Notarized & Gatekeeper Safe • macOS 14+",
+    heroDownloadCount: "🚀 16+ Downloads",
     heroTitlePart1: "The Missing Window &",
     heroTitlePart2: "Desktop Manager for macOS",
     heroDescription: "Supercharge your Mac workflow. Instant window tiling, lightning-fast visual ⌥Tab switcher HUD, 1-click messy desktop auto-cleaner, saved workspace layouts, and clean process Force Quit.",
@@ -158,7 +159,8 @@ const translations = {
     downloadBtnNav: "İndir",
 
     // Hero Bölümü
-    heroBadge: "Apple Noter Onaylı & Gatekeeper Güvenli • macOS 14+",
+    heroBadge: "Apple Notarized & Gatekeeper Güvenli • macOS 14+",
+    heroDownloadCount: "🚀 16+ Kez İndirildi",
     heroTitlePart1: "macOS İçin Eksik Olan",
     heroTitlePart2: "Akıllı Pencere ve Masaüstü Yöneticisi",
     heroDescription: "Mac iş akışınızı hızlandırın. Anında pencere bölme (tiling), görsel ⌥Tab hızlı pencere değiştirici HUD, tek tıkla masaüstü dosya temizleme, kayıtlı çalışma alanları ve donan uygulamaları tamamen kapatma (Force Quit).",
@@ -302,6 +304,7 @@ const translations = {
 
     // Hero
     heroBadge: "Certificado y Notarizado por Apple • macOS 14+",
+    heroDownloadCount: "🚀 16+ Descargas",
     heroTitlePart1: "El Administrador de Ventanas y",
     heroTitlePart2: "Escritorio que le Faltaba a macOS",
     heroDescription: "Optimiza tu flujo de trabajo en Mac. Acoplamiento instantáneo de ventanas, cambio rápido visual con ⌥Tab, organizador de escritorio con 1 clic, espacios de trabajo guardados y forzar salida de apps limpiamente.",
@@ -575,4 +578,40 @@ document.addEventListener('DOMContentLoaded', () => {
       macWindow.style.background = 'rgba(15, 20, 32, 0.85)';
     });
   }
+
+  // 6. Fetch live download count from GitHub Releases API
+  fetchLiveDownloadCount();
 });
+
+// MARK: - Live Download Count Fetcher
+async function fetchLiveDownloadCount() {
+  try {
+    const res = await fetch('https://api.github.com/repos/mertkanak/urban-palm-tree/releases');
+    if (!res.ok) return;
+    const releases = await res.json();
+    let totalDownloads = 0;
+    releases.forEach(rel => {
+      if (rel.assets && Array.isArray(rel.assets)) {
+        rel.assets.forEach(asset => {
+          if (asset.name && asset.name.endsWith('.zip')) {
+            totalDownloads += (asset.download_count || 0);
+          }
+        });
+      }
+    });
+
+    const displayCount = Math.max(totalDownloads, 16);
+    const countFormatted = displayCount >= 1000 ? `${(displayCount / 1000).toFixed(1)}k+` : `${displayCount}+`;
+
+    translations.en.heroDownloadCount = `🚀 ${countFormatted} Downloads`;
+    translations.tr.heroDownloadCount = `🚀 ${countFormatted} Kez İndirildi`;
+    translations.es.heroDownloadCount = `🚀 ${countFormatted} Descargas`;
+
+    const el = document.getElementById('live-download-counter');
+    if (el) {
+      el.textContent = translations[currentLang]?.heroDownloadCount || `🚀 ${countFormatted} Downloads`;
+    }
+  } catch (e) {
+    // Graceful fallback to default 16+
+  }
+}
