@@ -14,9 +14,17 @@ public enum DesktopViewMode: String, CaseIterable, Identifiable {
     public var localizedTitle: String {
         switch self {
         case .grid:
-            return LocalizationManager.shared.currentLanguage == .turkish ? "Izgara" : "Grid"
+            switch LocalizationManager.shared.currentLanguage {
+            case .turkish: return "Izgara"
+            case .spanish: return "Cuadrícula"
+            case .english: return "Grid"
+            }
         case .stack:
-            return LocalizationManager.shared.currentLanguage == .turkish ? "Yığın (Kategorili)" : "Category Stacks"
+            switch LocalizationManager.shared.currentLanguage {
+            case .turkish: return "Yığın (Kategorili)"
+            case .spanish: return "Pilas (Categorías)"
+            case .english: return "Category Stacks"
+            }
         }
     }
 

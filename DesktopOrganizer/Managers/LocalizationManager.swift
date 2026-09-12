@@ -6,6 +6,7 @@ import Combine
 public enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     case english = "en"
     case turkish = "tr"
+    case spanish = "es"
 
     public var id: String { rawValue }
 
@@ -13,6 +14,7 @@ public enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .english: return "English"
         case .turkish: return "Türkçe"
+        case .spanish: return "Español"
         }
     }
 
@@ -20,6 +22,7 @@ public enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .english: return "🇺🇸"
         case .turkish: return "🇹🇷"
+        case .spanish: return "🇪🇸"
         }
     }
 
@@ -42,10 +45,12 @@ public final class LocalizationManager: ObservableObject {
            let lang = AppLanguage(rawValue: saved) {
             self.currentLanguage = lang
         } else {
-            // Sistem dili kontrolü: Eğer sistem dili Türkçe ise Türkçe, değilse uluslararası standart olarak İngilizce
+            // Sistem dili kontrolü: Türkçe -> Türkçe, İspanyolca -> İspanyolca, diğerleri -> İngilizce
             let preferred = Locale.preferredLanguages.first?.lowercased() ?? ""
             if preferred.hasPrefix("tr") {
                 self.currentLanguage = .turkish
+            } else if preferred.hasPrefix("es") {
+                self.currentLanguage = .spanish
             } else {
                 self.currentLanguage = .english
             }
@@ -60,9 +65,13 @@ public final class LocalizationManager: ObservableObject {
         UserDefaults.standard.set(language.rawValue, forKey: storageKey)
     }
 
-    /// Bir sonraki dile geçiş yapar (EN <-> TR)
+    /// Bir sonraki dile geçiş yapar (EN -> TR -> ES -> EN)
     public func toggleLanguage() {
-        setLanguage(currentLanguage == .english ? .turkish : .english)
+        switch currentLanguage {
+        case .english: setLanguage(.turkish)
+        case .turkish: setLanguage(.spanish)
+        case .spanish: setLanguage(.english)
+        }
     }
 }
 
@@ -79,189 +88,420 @@ public enum L10n {
     }
 
     public static var appSubtitle: String {
-        lang == .turkish ? "Pencere & Masaüstü Yöneticisi" : "Smart Window & Desktop Organizer"
+        switch lang {
+        case .turkish: return "Pencere & Masaüstü Yöneticisi"
+        case .spanish: return "Administrador Inteligente de Ventanas y Escritorio"
+        case .english: return "Smart Window & Desktop Organizer"
+        }
     }
 
     public static var windowsTab: String {
-        lang == .turkish ? "Pencereler" : "Windows"
+        switch lang {
+        case .turkish: return "Pencereler"
+        case .spanish: return "Ventanas"
+        case .english: return "Windows"
+        }
     }
 
     public static var desktopTab: String {
-        lang == .turkish ? "Masaüstü" : "Desktop"
+        switch lang {
+        case .turkish: return "Masaüstü"
+        case .spanish: return "Escritorio"
+        case .english: return "Desktop"
+        }
     }
 
     // MARK: - Üst Araç Çubuğu Butonları
     public static var quickSwitchHelp: String {
-        lang == .turkish ? "Hızlı Pencere Değiştirici (⌥Tab / ⌃Tab)" : "Quick Window Switcher (⌥Tab / ⌃Tab)"
+        switch lang {
+        case .turkish: return "Hızlı Pencere Değiştirici (⌥Tab / ⌃Tab)"
+        case .spanish: return "Selector Rápido de Ventanas (⌥Tab / ⌃Tab)"
+        case .english: return "Quick Window Switcher (⌥Tab / ⌃Tab)"
+        }
     }
 
     public static var sessionsHelp: String {
-        lang == .turkish ? "Kaydedilmiş Çalışma Alanları" : "Saved Window Workspaces"
+        switch lang {
+        case .turkish: return "Kaydedilmiş Çalışma Alanları"
+        case .spanish: return "Espacios de Trabajo Guardados"
+        case .english: return "Saved Window Workspaces"
+        }
     }
 
     public static var refreshAll: String {
-        lang == .turkish ? "Tümünü Yenile" : "Refresh All"
+        switch lang {
+        case .turkish: return "Tümünü Yenile"
+        case .spanish: return "Actualizar Todo"
+        case .english: return "Refresh All"
+        }
     }
 
     public static var forceQuitAll: String {
-        lang == .turkish ? "Tümünü Kapat" : "Force Quit All"
+        switch lang {
+        case .turkish: return "Tümünü Kapat"
+        case .spanish: return "Cerrar Todo"
+        case .english: return "Force Quit All"
+        }
     }
 
     public static var forceQuitAllHelp: String {
-        lang == .turkish ? "Açık olan tüm uygulamaları tamamen zorla kapat (⌥⇧Q)" : "Force quit all open applications from Dock and background (⌥⇧Q)"
+        switch lang {
+        case .turkish: return "Açık olan tüm uygulamaları tamamen zorla kapat (⌥⇧Q)"
+        case .spanish: return "Forzar el cierre de todas las aplicaciones abiertas (⌥⇧Q)"
+        case .english: return "Force quit all open applications from Dock and background (⌥⇧Q)"
+        }
     }
 
     public static var hidePanelHelp: String {
-        lang == .turkish ? "Paneli Gizle (Menü çubuğundan veya kısayolla tekrar açılabilir)" : "Hide Panel (Can be reopened via shortcut or menu bar)"
+        switch lang {
+        case .turkish: return "Paneli Gizle (Menü çubuğundan veya kısayolla tekrar açılabilir)"
+        case .spanish: return "Ocultar Panel (Se puede volver a abrir desde la barra de menú o con atajo)"
+        case .english: return "Hide Panel (Can be reopened via shortcut or menu bar)"
+        }
     }
 
     public static var languageHelp: String {
-        lang == .turkish ? "Dili Değiştir (Language)" : "Switch Language"
+        switch lang {
+        case .turkish: return "Dili Değiştir (Language)"
+        case .spanish: return "Cambiar Idioma (Language)"
+        case .english: return "Switch Language"
+        }
     }
 
     // MARK: - Arama & Filtreleme
     public static var searchPlaceholder: String {
-        lang == .turkish ? "Pencere veya uygulama ara..." : "Search windows or apps..."
+        switch lang {
+        case .turkish: return "Pencere veya uygulama ara..."
+        case .spanish: return "Buscar ventanas o apps..."
+        case .english: return "Search windows or apps..."
+        }
+    }
+
+    public static var searchDesktopFilesPlaceholder: String {
+        switch lang {
+        case .turkish: return "Masaüstü dosyalarında ara..."
+        case .spanish: return "Buscar archivos en escritorio..."
+        case .english: return "Search desktop files..."
+        }
+    }
+
+    public static var desktopIconsToggleHelp: String {
+        switch lang {
+        case .turkish: return "Masaüstündeki tüm dosya ikonlarını gizler veya tekrar görünür yapar"
+        case .spanish: return "Oculta o muestra todos los iconos del escritorio"
+        case .english: return "Hide or show all desktop icons"
+        }
+    }
+
+    public static var refreshDesktopFilesHelp: String {
+        switch lang {
+        case .turkish: return "Masaüstü Dosyalarını Yenile"
+        case .spanish: return "Actualizar Archivos del Escritorio"
+        case .english: return "Refresh Desktop Files"
+        }
+    }
+
+    public static var noMatchingWindowsTitle: String {
+        switch lang {
+        case .turkish: return "Aramanızla Eşleşen Pencere Yok"
+        case .spanish: return "No Hay Ventanas Coincidentes"
+        case .english: return "No Matching Windows Found"
+        }
+    }
+
+    public static var refresh: String {
+        switch lang {
+        case .turkish: return "Yenile"
+        case .spanish: return "Actualizar"
+        case .english: return "Refresh"
+        }
     }
 
     public static var allApps: String {
-        lang == .turkish ? "Tümü" : "All"
+        switch lang {
+        case .turkish: return "Tümü"
+        case .spanish: return "Todo"
+        case .english: return "All"
+        }
     }
 
     public static var noWindowsFoundTitle: String {
-        lang == .turkish ? "Açık Pencere Bulunamadı" : "No Open Windows Found"
+        switch lang {
+        case .turkish: return "Açık Pencere Bulunamadı"
+        case .spanish: return "No Hay Ventanas Abiertas"
+        case .english: return "No Open Windows Found"
+        }
     }
 
     public static var noWindowsFoundSubtitle: String {
-        lang == .turkish ? "Diğer uygulamalarda pencereler açıldığında otomatik olarak burada görünecektir." : "Windows will automatically appear here when opened in other applications."
+        switch lang {
+        case .turkish: return "Diğer uygulamalarda pencereler açıldığında otomatik olarak burada görünecektir."
+        case .spanish: return "Las ventanas aparecerán aquí automáticamente cuando se abran en otras aplicaciones."
+        case .english: return "Windows will automatically appear here when opened in other applications."
+        }
     }
 
     public static func searchNoMatch(query: String) -> String {
-        lang == .turkish ? "'\(query)' araması için açık olan hiçbir pencere bulunamadı." : "No open windows found matching '\(query)'."
+        switch lang {
+        case .turkish: return "'\(query)' araması için açık olan hiçbir pencere bulunamadı."
+        case .spanish: return "No se encontraron ventanas abiertas que coincidan con '\(query)'."
+        case .english: return "No open windows found matching '\(query)'."
+        }
     }
 
     public static var recentWindows: String {
-        lang == .turkish ? "Son Kullanılanlar" : "Recently Focused"
+        switch lang {
+        case .turkish: return "Son Kullanılanlar"
+        case .spanish: return "Recientes"
+        case .english: return "Recently Focused"
+        }
     }
 
     // MARK: - Pencere Kartı & Tiling Aksiyonları
     public static var snapLeft: String {
-        lang == .turkish ? "◧ Sol Yarıya Yerleştir" : "◧ Snap to Left Half"
+        switch lang {
+        case .turkish: return "◧ Sol Yarıya Yerleştir"
+        case .spanish: return "◧ Acoplar a la Izquierda"
+        case .english: return "◧ Snap to Left Half"
+        }
     }
 
     public static var snapRight: String {
-        lang == .turkish ? "◨ Sağ Yarıya Yerleştir" : "◨ Snap to Right Half"
+        switch lang {
+        case .turkish: return "◨ Sağ Yarıya Yerleştir"
+        case .spanish: return "◨ Acoplar a la Derecha"
+        case .english: return "◨ Snap to Right Half"
+        }
     }
 
     public static var maximize: String {
-        lang == .turkish ? "⬚ Tam Ekran Yap" : "⬚ Maximize Window"
+        switch lang {
+        case .turkish: return "⬚ Tam Ekran Yap"
+        case .spanish: return "⬚ Maximizar Ventana"
+        case .english: return "⬚ Maximize Window"
+        }
     }
 
     public static var center: String {
-        lang == .turkish ? "◲ Ortala" : "◲ Center on Screen"
+        switch lang {
+        case .turkish: return "◲ Ortala"
+        case .spanish: return "◲ Centrar en Pantalla"
+        case .english: return "◲ Center on Screen"
+        }
     }
 
     public static var minimize: String {
-        lang == .turkish ? "➖ Simge Durumuna Küçült" : "➖ Minimize Window"
+        switch lang {
+        case .turkish: return "➖ Simge Durumuna Küçült"
+        case .spanish: return "➖ Minimizar Ventana"
+        case .english: return "➖ Minimize Window"
+        }
     }
 
     public static var pinToTop: String {
-        lang == .turkish ? "📌 Yukarıya Sabitle" : "📌 Pin to Top"
+        switch lang {
+        case .turkish: return "📌 Yukarıya Sabitle"
+        case .spanish: return "📌 Fijar Arriba"
+        case .english: return "📌 Pin to Top"
+        }
     }
 
     public static var unpin: String {
-        lang == .turkish ? "📌 Sabitlemeyi Kaldır" : "📌 Unpin from Top"
+        switch lang {
+        case .turkish: return "📌 Sabitlemeyi Kaldır"
+        case .spanish: return "📌 Desfijar de Arriba"
+        case .english: return "📌 Unpin from Top"
+        }
     }
 
     public static var copyScreenshot: String {
-        lang == .turkish ? "📸 Screenshot Al (Panoya)" : "📸 Copy Screenshot (Clipboard)"
+        switch lang {
+        case .turkish: return "📸 Screenshot Al (Panoya)"
+        case .spanish: return "📸 Copiar Captura (Portapapeles)"
+        case .english: return "📸 Copy Screenshot (Clipboard)"
+        }
     }
 
     public static func forceQuitHelp(app: String) -> String {
-        lang == .turkish ? "\(app) Uygulamasını Tamamen Zorla Kapat (Force Quit - Dock'ta Kalmaz)" : "Force Quit \(app) completely (Closes process and removes from Dock)"
+        switch lang {
+        case .turkish: return "\(app) Uygulamasını Tamamen Zorla Kapat (Force Quit - Dock'ta Kalmaz)"
+        case .spanish: return "Forzar salida completa de \(app) (Cierra proceso y quita del Dock)"
+        case .english: return "Force Quit \(app) completely (Closes process and removes from Dock)"
+        }
     }
 
     public static var closeWindowHelp: String {
-        lang == .turkish ? "Pencereyi Kapat (⌥ Tıklama: Tamamen Force Quit)" : "Close Window (⌥ Click: Force Quit App)"
+        switch lang {
+        case .turkish: return "Pencereyi Kapat (⌥ Tıklama: Tamamen Force Quit)"
+        case .spanish: return "Cerrar Ventana (⌥ Clic: Forzar Cierre de la App)"
+        case .english: return "Close Window (⌥ Click: Force Quit App)"
+        }
     }
 
     // MARK: - Hızlı Pencere Değiştirici (Quick Switcher HUD)
     public static var quickSwitchTitle: String {
-        lang == .turkish ? "Hızlı Pencere Geçişi" : "Quick Window Switcher"
+        switch lang {
+        case .turkish: return "Hızlı Pencere Geçişi"
+        case .spanish: return "Cambio Rápido de Ventanas"
+        case .english: return "Quick Window Switcher"
+        }
     }
 
     public static func openWindowsCount(_ count: Int) -> String {
-        lang == .turkish ? "\(count) Açık Pencere" : "\(count) Open Windows"
+        switch lang {
+        case .turkish:
+            return "\(count) Açık Pencere"
+        case .spanish:
+            return count == 1 ? "1 Ventana Abierta" : "\(count) Ventanas Abiertas"
+        case .english:
+            return count == 1 ? "1 Open Window" : "\(count) Open Windows"
+        }
     }
 
     public static var quickSwitchEmpty: String {
-        lang == .turkish ? "Açık pencere bulunamadı" : "No open windows found"
+        switch lang {
+        case .turkish: return "Açık pencere bulunamadı"
+        case .spanish: return "No se encontraron ventanas abiertas"
+        case .english: return "No open windows found"
+        }
     }
 
     public static var hintNavigate: String {
-        lang == .turkish ? "Gezin" : "Navigate"
+        switch lang {
+        case .turkish: return "Gezin"
+        case .spanish: return "Navegar"
+        case .english: return "Navigate"
+        }
     }
 
     public static var hintNext: String {
-        lang == .turkish ? "Sonraki" : "Next"
+        switch lang {
+        case .turkish: return "Sonraki"
+        case .spanish: return "Siguiente"
+        case .english: return "Next"
+        }
     }
 
     public static var hintSwitch: String {
-        lang == .turkish ? "Pencereye Geç" : "Switch to Window"
+        switch lang {
+        case .turkish: return "Pencereye Geç"
+        case .spanish: return "Cambiar"
+        case .english: return "Switch to Window"
+        }
     }
 
     public static var hintForceQuit: String {
-        lang == .turkish ? "Force Quit" : "Force Quit"
+        switch lang {
+        case .turkish: return "Force Quit"
+        case .spanish: return "Forzar Salida"
+        case .english: return "Force Quit"
+        }
     }
 
     public static var hintClose: String {
-        lang == .turkish ? "Kapat" : "Close"
+        switch lang {
+        case .turkish: return "Kapat"
+        case .spanish: return "Cerrar"
+        case .english: return "Close"
+        }
     }
 
     // MARK: - Masaüstü Düzenleyici (Desktop Clean Up)
     public static var hideDesktopIcons: String {
-        lang == .turkish ? "Masaüstü Simgelerini Gizle" : "Hide Desktop Icons"
+        switch lang {
+        case .turkish: return "Masaüstü Simgelerini Gizle"
+        case .spanish: return "Ocultar Iconos del Escritorio"
+        case .english: return "Hide Desktop Icons"
+        }
     }
 
     public static var showDesktopIcons: String {
-        lang == .turkish ? "Masaüstü Simgelerini Göster" : "Show Desktop Icons"
+        switch lang {
+        case .turkish: return "Masaüstü Simgelerini Göster"
+        case .spanish: return "Mostrar Iconos del Escritorio"
+        case .english: return "Show Desktop Icons"
+        }
     }
 
     public static var autoOrganize: String {
-        lang == .turkish ? "Masaüstünü Otomatik Düzenle" : "Organize Desktop Automatically"
+        switch lang {
+        case .turkish: return "Masaüstünü Otomatik Düzenle"
+        case .spanish: return "Organizar Escritorio Automáticamente"
+        case .english: return "Organize Desktop Automatically"
+        }
     }
 
     public static var autoOrganizeHelp: String {
-        lang == .turkish ? "Masaüstündeki tüm dosyaları kategorilere göre alt klasörlere taşır" : "Moves all files on desktop into organized category folders"
+        switch lang {
+        case .turkish: return "Masaüstündeki tüm dosyaları kategorilere göre alt klasörlere taşır"
+        case .spanish: return "Mueve todos los archivos del escritorio a carpetas organizadas por categoría"
+        case .english: return "Moves all files on desktop into organized category folders"
+        }
     }
 
     public static var emptyCategory: String {
-        lang == .turkish ? "Bu kategoride dosya yok" : "No files in this category"
+        switch lang {
+        case .turkish: return "Bu kategoride dosya yok"
+        case .spanish: return "No hay archivos en esta categoría"
+        case .english: return "No files in this category"
+        }
     }
 
     public static var desktopCleanTitle: String {
-        lang == .turkish ? "Masaüstü Temiz" : "Desktop is Clean"
+        switch lang {
+        case .turkish: return "Masaüstü Temiz"
+        case .spanish: return "Escritorio Limpio"
+        case .english: return "Desktop is Clean"
+        }
     }
 
     public static var desktopCleanSubtitle: String {
-        lang == .turkish ? "Masaüstünüzde düzenlenecek dosya bulunmuyor." : "No files found on your desktop to organize."
+        switch lang {
+        case .turkish: return "Masaüstünüzde düzenlenecek dosya bulunmuyor."
+        case .spanish: return "No se encontraron archivos en tu escritorio para organizar."
+        case .english: return "No files found on your desktop to organize."
+        }
     }
 
     // MARK: - Dosya Kategorileri (File Categories)
     public static func categoryName(_ category: String) -> String {
         switch category {
         case "images", "Resimler":
-            return lang == .turkish ? "Resimler" : "Images & Photos"
+            switch lang {
+            case .turkish: return "Resimler"
+            case .spanish: return "Imágenes y Fotos"
+            case .english: return "Images & Photos"
+            }
         case "documents", "Dokümanlar":
-            return lang == .turkish ? "Dokümanlar" : "Documents"
+            switch lang {
+            case .turkish: return "Dokümanlar"
+            case .spanish: return "Documentos"
+            case .english: return "Documents"
+            }
         case "downloads", "İndirilenler / Arşivler":
-            return lang == .turkish ? "İndirilenler / Arşivler" : "Downloads & Archives"
+            switch lang {
+            case .turkish: return "İndirilenler / Arşivler"
+            case .spanish: return "Descargas y Archivos"
+            case .english: return "Downloads & Archives"
+            }
         case "applications", "Uygulamalar":
-            return lang == .turkish ? "Uygulamalar" : "Applications"
+            switch lang {
+            case .turkish: return "Uygulamalar"
+            case .spanish: return "Aplicaciones"
+            case .english: return "Applications"
+            }
         case "developer", "Kod & Geliştirme":
-            return lang == .turkish ? "Kod & Geliştirme" : "Code & Development"
+            switch lang {
+            case .turkish: return "Kod & Geliştirme"
+            case .spanish: return "Código y Desarrollo"
+            case .english: return "Code & Development"
+            }
         case "other", "Diğer":
-            return lang == .turkish ? "Diğer" : "Other Files"
+            switch lang {
+            case .turkish: return "Diğer"
+            case .spanish: return "Otros Archivos"
+            case .english: return "Other Files"
+            }
         default:
             return category
         }
@@ -269,34 +509,61 @@ public enum L10n {
 
     // MARK: - Çalışma Alanları (Session Management)
     public static var sessionsTitle: String {
-        lang == .turkish ? "Kayıtlı Çalışma Alanları" : "Saved Workspaces"
+        switch lang {
+        case .turkish: return "Kayıtlı Çalışma Alanları"
+        case .spanish: return "Espacios de Trabajo Guardados"
+        case .english: return "Saved Workspaces"
+        }
     }
 
     public static var saveCurrentSession: String {
-        lang == .turkish ? "Mevcut Düzeni Kaydet" : "Save Current Layout"
+        switch lang {
+        case .turkish: return "Mevcut Düzeni Kaydet"
+        case .spanish: return "Guardar Diseño Actual"
+        case .english: return "Save Current Layout"
+        }
     }
 
     public static var sessionNamePlaceholder: String {
-        lang == .turkish ? "Çalışma alanı adı (ör. Proje X, Araştırma)..." : "Workspace name (e.g. Project A, Research)..."
+        switch lang {
+        case .turkish: return "Çalışma alanı adı (ör. Proje X, Araştırma)..."
+        case .spanish: return "Nombre del espacio (ej. Proyecto X, Estudio)..."
+        case .english: return "Workspace name (e.g. Project A, Research)..."
+        }
     }
 
     public static var restoreSession: String {
-        lang == .turkish ? "Düzeni Geri Yükle" : "Restore Workspace"
+        switch lang {
+        case .turkish: return "Geri Yükle"
+        case .spanish: return "Restaurar"
+        case .english: return "Restore"
+        }
     }
 
     public static var deleteSession: String {
-        lang == .turkish ? "Sil" : "Delete"
+        switch lang {
+        case .turkish: return "Sil"
+        case .spanish: return "Eliminar"
+        case .english: return "Delete"
+        }
     }
 
     public static var noSessionsYet: String {
-        lang == .turkish ? "Henüz kayıtlı bir çalışma alanı yok" : "No saved workspaces yet"
+        switch lang {
+        case .turkish: return "Henüz kayıtlı bir çalışma alanı yok"
+        case .spanish: return "Aún no hay espacios de trabajo guardados"
+        case .english: return "No saved workspaces yet"
+        }
     }
 
     public static func sessionSummary(count: Int, date: String) -> String {
         let countText: String
-        if lang == .turkish {
+        switch lang {
+        case .turkish:
             countText = "\(count) pencere"
-        } else {
+        case .spanish:
+            countText = count == 1 ? "1 ventana" : "\(count) ventanas"
+        case .english:
             countText = count == 1 ? "1 window" : "\(count) windows"
         }
         return "\(countText) • \(date)"
@@ -304,147 +571,287 @@ public enum L10n {
 
     // MARK: - Menü Çubuğu (Menu Bar Context Menu)
     public static var menuToggle: String {
-        lang == .turkish ? "Desktop Organizer'ı Aç/Kapat" : "Toggle Desktop Organizer"
+        switch lang {
+        case .turkish: return "Desktop Organizer'ı Aç/Kapat"
+        case .spanish: return "Abrir/Cerrar Desktop Organizer"
+        case .english: return "Toggle Desktop Organizer"
+        }
     }
 
     public static var menuQuickSwitch: String {
-        lang == .turkish ? "Hızlı Pencere Değiştirici (⌥+Tab / ⌃+Tab)" : "Quick Window Switcher (⌥+Tab / ⌃+Tab)"
+        switch lang {
+        case .turkish: return "Hızlı Pencere Değiştirici (⌥+Tab / ⌃+Tab)"
+        case .spanish: return "Selector Rápido de Ventanas (⌥+Tab / ⌃+Tab)"
+        case .english: return "Quick Window Switcher (⌥+Tab / ⌃+Tab)"
+        }
     }
 
     public static var menuRefreshWindows: String {
-        lang == .turkish ? "Pencereleri Yenile" : "Refresh Windows"
+        switch lang {
+        case .turkish: return "Pencereleri Yenile"
+        case .spanish: return "Actualizar Ventanas"
+        case .english: return "Refresh Windows"
+        }
     }
 
     public static var menuToggleDesktopIcons: String {
-        lang == .turkish ? "Masaüstü İkonlarını Gizle/Göster" : "Toggle Desktop Icons"
+        switch lang {
+        case .turkish: return "Masaüstü İkonlarını Gizle/Göster"
+        case .spanish: return "Ocultar/Mostrar Iconos del Escritorio"
+        case .english: return "Toggle Desktop Icons"
+        }
     }
 
     public static var menuForceQuitAll: String {
-        lang == .turkish ? "Tüm Açık Uygulamaları Kapat (⌥+⇧+Q)" : "Force Quit All Open Apps (⌥+⇧+Q)"
+        switch lang {
+        case .turkish: return "Tüm Açık Uygulamaları Kapat (⌥+⇧+Q)"
+        case .spanish: return "Cerrar Todas las Apps Abiertas (⌥+⇧+Q)"
+        case .english: return "Force Quit All Open Apps (⌥+⇧+Q)"
+        }
     }
 
     public static var menuLanguage: String {
-        lang == .turkish ? "Dil / Language" : "Language / Dil"
+        switch lang {
+        case .turkish: return "Dil / Language"
+        case .spanish: return "Idioma / Language"
+        case .english: return "Language / Idioma"
+        }
     }
 
     public static var menuQuit: String {
-        lang == .turkish ? "Çıkış" : "Quit"
+        switch lang {
+        case .turkish: return "Çıkış"
+        case .spanish: return "Salir"
+        case .english: return "Quit"
+        }
     }
 
     // MARK: - İzinler & Güncelleme
     public static var permissionsTitle: String {
-        lang == .turkish ? "Gerekli İzinler" : "Required Permissions"
+        switch lang {
+        case .turkish: return "Gerekli İzinler"
+        case .spanish: return "Permisos Requeridos"
+        case .english: return "Required Permissions"
+        }
     }
 
     public static var systemPermissionsTitle: String {
-        lang == .turkish ? "Sistem İzinleri Gerekli" : "System Permissions Required"
+        switch lang {
+        case .turkish: return "Sistem İzinleri Gerekli"
+        case .spanish: return "Se Requieren Permisos del Sistema"
+        case .english: return "System Permissions Required"
+        }
     }
 
     public static var systemPermissionsSubtitle: String {
-        lang == .turkish
-            ? "Pencereleri öne getirmek ve canlı önizlemeler için izinler gereklidir.\n⚠️ Ayarlarda zaten açık görünüyorsa: Anahtarı bir kez kapatıp tekrar açmanız yeterlidir."
-            : "Permissions are required for window management and live previews.\n⚠️ If already enabled in Settings: Simply toggle the switch off and on once."
+        switch lang {
+        case .turkish:
+            return "Pencereleri öne getirmek ve canlı önizlemeler için izinler gereklidir.\n⚠️ Ayarlarda zaten açık görünüyorsa: Anahtarı bir kez kapatıp tekrar açmanız yeterlidir."
+        case .spanish:
+            return "Se requieren permisos para administrar ventanas y vistas previas en vivo.\n⚠️ Si ya aparece activado en Ajustes: Desactiva y activa el interruptor una vez."
+        case .english:
+            return "Permissions are required for window management and live previews.\n⚠️ If already enabled in Settings: Simply toggle the switch off and on once."
+        }
     }
 
     public static var accessibilityPermission: String {
-        lang == .turkish ? "Erişilebilirlik İzni" : "Accessibility Permission"
+        switch lang {
+        case .turkish: return "Erişilebilirlik İzni"
+        case .spanish: return "Permiso de Accesibilidad"
+        case .english: return "Accessibility Permission"
+        }
     }
 
     public static var screenCapturePermission: String {
-        lang == .turkish ? "Ekran Kaydı İzni" : "Screen Recording Permission"
+        switch lang {
+        case .turkish: return "Ekran Kaydı İzni"
+        case .spanish: return "Permiso de Grabación de Pantalla"
+        case .english: return "Screen Recording Permission"
+        }
     }
 
     public static var recheckPermissions: String {
-        lang == .turkish ? "İzinleri Yeniden Kontrol Et" : "Recheck Permissions"
+        switch lang {
+        case .turkish: return "İzinleri Yeniden Kontrol Et"
+        case .spanish: return "Volver a Comprobar Permisos"
+        case .english: return "Recheck Permissions"
+        }
     }
 
     public static var accessibilityNotice: String {
-        lang == .turkish ? "Pencere yönetimi ve odaklanma için Erişilebilirlik izni gereklidir." : "Accessibility permission is required for window management and focus."
+        switch lang {
+        case .turkish: return "Pencere yönetimi ve odaklanma için Erişilebilirlik izni gereklidir."
+        case .spanish: return "El permiso de Accesibilidad es necesario para gestionar y enfocar ventanas."
+        case .english: return "Accessibility permission is required for window management and focus."
+        }
     }
 
     public static var screenRecordingNotice: String {
-        lang == .turkish ? "Pencerelerin canlı önizlemeleri için Ekran Kaydı izni gereklidir." : "Screen Recording permission is required for live window thumbnails."
+        switch lang {
+        case .turkish: return "Pencerelerin canlı önizlemeleri için Ekran Kaydı izni gereklidir."
+        case .spanish: return "El permiso de Grabación de Pantalla es necesario para las miniaturas en vivo."
+        case .english: return "Screen Recording permission is required for live window thumbnails."
+        }
     }
 
     public static var grantPermission: String {
-        lang == .turkish ? "İzin Ver" : "Grant Permission"
+        switch lang {
+        case .turkish: return "İzin Ver"
+        case .spanish: return "Conceder Permiso"
+        case .english: return "Grant Permission"
+        }
     }
 
     public static var permissionsGranted: String {
-        lang == .turkish ? "Tüm İzinler Tamam" : "All Permissions Granted"
+        switch lang {
+        case .turkish: return "Tüm İzinler Tamam"
+        case .spanish: return "Todos los Permisos Concedidos"
+        case .english: return "All Permissions Granted"
+        }
     }
 
     public static var permissionsMissing: String {
-        lang == .turkish ? "Eksik İzinler Var" : "Permissions Missing"
+        switch lang {
+        case .turkish: return "Eksik İzinler Var"
+        case .spanish: return "Faltan Permisos"
+        case .english: return "Permissions Missing"
+        }
     }
 
     public static var updateAvailableTitle: String {
-        lang == .turkish ? "Yeni Güncelleme Mevcut!" : "New Update Available!"
+        switch lang {
+        case .turkish: return "Yeni Güncelleme Mevcut!"
+        case .spanish: return "¡Nueva Actualización Disponible!"
+        case .english: return "New Update Available!"
+        }
     }
 
     public static func updateVersionText(latest: String, current: String) -> String {
-        lang == .turkish ? "Sürüm \(latest) hazır  •  Mevcut: \(current)" : "Version \(latest) ready  •  Current: \(current)"
+        switch lang {
+        case .turkish: return "Sürüm \(latest) hazır  •  Mevcut: \(current)"
+        case .spanish: return "Versión \(latest) lista  •  Actual: \(current)"
+        case .english: return "Version \(latest) ready  •  Current: \(current)"
+        }
     }
 
     public static var updateButton: String {
-        lang == .turkish ? "Şimdi Güncelle ve Yeniden Başlat" : "Update Now & Restart"
+        switch lang {
+        case .turkish: return "Şimdi Güncelle ve Yeniden Başlat"
+        case .spanish: return "Actualizar Ahora y Reiniciar"
+        case .english: return "Update Now & Restart"
+        }
     }
 
     // MARK: - Ek Genel Metinler (Diğer Görünümler)
     public static var groupByApp: String {
-        lang == .turkish ? "Grupla" : "Group"
+        switch lang {
+        case .turkish: return "Grupla"
+        case .spanish: return "Agrupar"
+        case .english: return "Group"
+        }
     }
 
     public static var statusBarTip: String {
-        lang == .turkish
-            ? "İpucu: Karta tıklayarak öne getirebilir, sürükleyerek masaüstünde konumlandırabilirsiniz."
-            : "Tip: Click a card to focus, drag to position anywhere on your desktop."
+        switch lang {
+        case .turkish:
+            return "İpucu: Karta tıklayarak öne getirebilir, sürükleyerek masaüstünde konumlandırabilirsiniz."
+        case .spanish:
+            return "Consejo: Haz clic en una tarjeta para enfocarla o arrastra para colocarla en la pantalla."
+        case .english:
+            return "Tip: Click a card to focus, drag to position anywhere on your desktop."
+        }
     }
 
     public static var open: String {
-        lang == .turkish ? "Aç" : "Open"
+        switch lang {
+        case .turkish: return "Aç"
+        case .spanish: return "Abrir"
+        case .english: return "Open"
+        }
     }
 
     public static var showInFinder: String {
-        lang == .turkish ? "Finder'da Göster" : "Show in Finder"
+        switch lang {
+        case .turkish: return "Finder'da Göster"
+        case .spanish: return "Mostrar en Finder"
+        case .english: return "Show in Finder"
+        }
     }
 
     public static var doubleClickToOpen: String {
-        lang == .turkish ? "Çift tıklayarak açın" : "Double-click to open"
+        switch lang {
+        case .turkish: return "Çift tıklayarak açın"
+        case .spanish: return "Doble clic para abrir"
+        case .english: return "Double-click to open"
+        }
     }
 
     public static var folder: String {
-        lang == .turkish ? "Klasör" : "Folder"
+        switch lang {
+        case .turkish: return "Klasör"
+        case .spanish: return "Carpeta"
+        case .english: return "Folder"
+        }
     }
 
     public static var cancel: String {
-        lang == .turkish ? "İptal" : "Cancel"
+        switch lang {
+        case .turkish: return "İptal"
+        case .spanish: return "Cancelar"
+        case .english: return "Cancel"
+        }
     }
 
     public static var save: String {
-        lang == .turkish ? "Kaydet" : "Save"
+        switch lang {
+        case .turkish: return "Kaydet"
+        case .spanish: return "Guardar"
+        case .english: return "Save"
+        }
     }
 
     public static var rename: String {
-        lang == .turkish ? "Yeniden Adlandır" : "Rename"
+        switch lang {
+        case .turkish: return "Yeniden Adlandır"
+        case .spanish: return "Renombrar"
+        case .english: return "Rename"
+        }
     }
 
     public static var renameLayoutTitle: String {
-        lang == .turkish ? "Düzeni Yeniden Adlandır" : "Rename Layout"
+        switch lang {
+        case .turkish: return "Düzeni Yeniden Adlandır"
+        case .spanish: return "Renombrar Diseño"
+        case .english: return "Rename Layout"
+        }
     }
 
     public static var layoutNamePlaceholder: String {
-        lang == .turkish ? "Düzen adı" : "Layout name"
+        switch lang {
+        case .turkish: return "Düzen adı"
+        case .spanish: return "Nombre del diseño"
+        case .english: return "Layout name"
+        }
     }
 
     public static var layoutDefaultPrefix: String {
-        lang == .turkish ? "Düzen" : "Layout"
+        switch lang {
+        case .turkish: return "Düzen"
+        case .spanish: return "Diseño"
+        case .english: return "Layout"
+        }
     }
 
     public static var sessionsEmptyDescription: String {
-        lang == .turkish
-            ? "\"Düzeni Kaydet\" ile mevcut pencere\nkonumlarını isimle kaydedebilirsiniz."
-            : "Use \"Save Current Layout\" to save\nand restore window arrangements."
+        switch lang {
+        case .turkish:
+            return "\"Düzeni Kaydet\" ile mevcut pencere\nkonumlarını isimle kaydedebilirsiniz."
+        case .spanish:
+            return "Usa \"Guardar Diseño Actual\" para guardar\ny restaurar la disposición de tus ventanas."
+        case .english:
+            return "Use \"Save Current Layout\" to save\nand restore window arrangements."
+        }
     }
 }
+
 

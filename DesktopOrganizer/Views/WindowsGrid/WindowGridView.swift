@@ -138,7 +138,7 @@ public struct WindowGridView: View {
                 .font(.system(size: 52))
                 .foregroundColor(.secondary.opacity(0.6))
 
-            Text(windowManager.searchQuery.isEmpty ? L10n.noWindowsFoundTitle : (LocalizationManager.shared.currentLanguage == .turkish ? "Aramanızla Eşleşen Pencere Yok" : "No Matching Windows Found"))
+            Text(windowManager.searchQuery.isEmpty ? L10n.noWindowsFoundTitle : L10n.noMatchingWindowsTitle)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundColor(.primary)
 
@@ -156,7 +156,7 @@ public struct WindowGridView: View {
             }) {
                 HStack(spacing: 6) {
                     Image(systemName: "arrow.clockwise")
-                    Text(LocalizationManager.shared.currentLanguage == .turkish ? "Yenile" : "Refresh")
+                    Text(L10n.refresh)
                 }
                 .font(.system(size: 12, weight: .medium))
             }

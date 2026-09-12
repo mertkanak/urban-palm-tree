@@ -238,17 +238,8 @@ private struct SessionRowView: View {
 
             // Geri yükle butonu
             Button(action: onRestore) {
-                Group {
-                    if isRestoring {
-                        ProgressView()
-                            .controlSize(.small)
-                            .scaleEffect(0.7)
-                    } else {
-                        Label(L10n.restoreSession, systemImage: "arrow.counterclockwise")
-                            .font(.system(size: 11, weight: .semibold))
-                    }
-                }
-                .frame(width: l10n.currentLanguage == .turkish ? 76 : 94, height: 22)
+                restoreButtonContent
+                    .frame(width: restoreButtonWidth, height: 22)
             }
             .buttonStyle(.borderedProminent)
             .tint(isRestoring ? .gray : .purple)
@@ -267,6 +258,26 @@ private struct SessionRowView: View {
         )
         .animation(.spring(response: 0.22, dampingFraction: 0.78), value: isHovered)
         .onHover { isHovered = $0 }
+    }
+
+    private var restoreButtonWidth: CGFloat {
+        switch l10n.currentLanguage {
+        case .turkish: return 76
+        case .spanish: return 86
+        case .english: return 94
+        }
+    }
+
+    @ViewBuilder
+    private var restoreButtonContent: some View {
+        if isRestoring {
+            ProgressView()
+                .controlSize(.small)
+                .scaleEffect(0.7)
+        } else {
+            Label(L10n.restoreSession, systemImage: "arrow.counterclockwise")
+                .font(.system(size: 11, weight: .semibold))
+        }
     }
 }
 

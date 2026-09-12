@@ -21,7 +21,7 @@ public struct DesktopOrganizerView: View {
                             .foregroundColor(.secondary)
                             .font(.system(size: 13))
 
-                        TextField(LocalizationManager.shared.currentLanguage == .turkish ? "Masaüstü dosyalarında ara..." : "Search desktop files...", text: $iconManager.searchQuery)
+                        TextField(L10n.searchDesktopFilesPlaceholder, text: $iconManager.searchQuery)
                             .textFieldStyle(.plain)
                             .font(.system(size: 13))
 
@@ -80,7 +80,7 @@ public struct DesktopOrganizerView: View {
                         )
                     }
                     .buttonStyle(.plain)
-                    .help(LocalizationManager.shared.currentLanguage == .turkish ? "Masaüstündeki tüm dosya ikonlarını gizler veya tekrar görünür yapar" : "Hide or show all desktop icons")
+                    .help(L10n.desktopIconsToggleHelp)
 
                     // Yenile Butonu
                     Button(action: {
@@ -90,7 +90,7 @@ public struct DesktopOrganizerView: View {
                             .font(.system(size: 13))
                     }
                     .buttonStyle(.bordered)
-                    .help(LocalizationManager.shared.currentLanguage == .turkish ? "Masaüstü Dosyalarını Yenile" : "Refresh Desktop Files")
+                    .help(L10n.refreshDesktopFilesHelp)
                 }
 
                 // Kategori Filtre Hapları (Pills)

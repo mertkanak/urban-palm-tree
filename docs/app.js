@@ -1,9 +1,9 @@
 /**
  * Desktop Organizer — Landing Page Interactive Scripts
- * Features: 100% Comprehensive Bilingual I18n Engine (EN/TR), Interactive Mockup Tabs, FAQ Accordion.
+ * Features: 100% Comprehensive Trilingual I18n Engine (EN / TR / ES), Interactive Mockup Tabs, FAQ Accordion.
  */
 
-// MARK: - Bilingual Translations Dictionary
+// MARK: - Trilingual Translations Dictionary
 const translations = {
   en: {
     // Navigation
@@ -289,20 +289,165 @@ const translations = {
     footerReleases: "Sürümler",
     footerCreatedBy: "Geliştiren",
     footerRights: "Tüm hakları saklıdır."
+  },
+
+  es: {
+    // Navegación
+    navFeatures: "Características",
+    navQuickSwitch: "Cambio Rápido",
+    navDesktopClean: "Escritorio",
+    navWorkspaces: "Espacios",
+    navFaq: "Preguntas",
+    downloadBtnNav: "Descargar",
+
+    // Hero
+    heroBadge: "Certificado y Notarizado por Apple • macOS 14+",
+    heroTitlePart1: "El Administrador de Ventanas y",
+    heroTitlePart2: "Escritorio que le Faltaba a macOS",
+    heroDescription: "Optimiza tu flujo de trabajo en Mac. Acoplamiento instantáneo de ventanas, cambio rápido visual con ⌥Tab, organizador de escritorio con 1 clic, espacios de trabajo guardados y forzar salida de apps limpiamente.",
+    heroBtnSubtext: "Descarga Gratuita para macOS",
+    heroBtnMaintext: "Descargar Desktop Organizer",
+    heroGithubBtn: "Destacar en GitHub",
+    heroSpecSilicon: "⚡ Apple Silicon (M1/M2/M3/M4) e Intel",
+    heroSpecMacOS: "🖥️ macOS 14.0+ Sonoma y Sequoia",
+    heroSpecOffline: "🔒 100% Sin Conexión y Privado",
+
+    // Mockup Ventana
+    mockupTabWindows: "Ventanas",
+    mockupTabQuickSwitch: "Cambio Rápido (⌥Tab)",
+    mockupTabDesktop: "Organizador de Escritorio",
+    mockupLang: "🇪🇸 ES",
+    mockupSearchPlaceholder: "Buscar ventanas o apps...",
+    mockupViewLarge: "◫ Tarjetas Grandes",
+    mockupViewCompact: "▦ Compacto",
+    mockupViewList: "☰ Lista",
+    mockupCountBadge: "● 4 Ventanas Abiertas",
+
+    mockupHudTitle: "⚡ Cambio Rápido de Ventanas",
+    mockupHudCount: "4 Ventanas",
+    mockupHudEnter: "Enter ↵",
+    mockupHudNav: "<kbd>← →</kbd> Navegar",
+    mockupHudNext: "<kbd>Tab</kbd> Siguiente",
+    mockupHudSwitch: "<kbd>Enter ↵</kbd> Cambiar",
+    mockupHudQuit: "<kbd class=\"red\">Q</kbd> Forzar Salida",
+    mockupHudClose: "<kbd>ESC</kbd> Cerrar",
+
+    mockupAutoCleanBtn: "Organizar Escritorio Automáticamente",
+    mockupHideIconsBtn: "Ocultar Iconos del Escritorio",
+    mockupCatImages: "Imágenes y Fotos",
+    mockupCatDocs: "Documentos",
+    mockupCatDownloads: "Descargas y Archivos",
+    mockupCatImgFiles: "captura_1.png, banner.jpg, logo.svg...",
+    mockupCatDocFiles: "Factura-2026.pdf, Notas.docx, plan.md...",
+    mockupCatDownFiles: "proyecto-backup.zip, node-v20.pkg...",
+
+    // Características
+    featBadge: "DISEÑADO PARA LA VELOCIDAD Y PRODUCTIVIDAD",
+    featTitle: "Todo lo que necesitas para dominar tu pantalla en Mac",
+    featSubtitle: "Deja de buscar ventanas perdidas o lidiar con un escritorio caótico. Desktop Organizer te da el control total.",
+
+    f1Title: "Acoplamiento Inteligente de Ventanas",
+    f1Desc: "Acopla fácilmente cualquier ventana a la izquierda, derecha, centro o pantalla completa. Fija notas importantes encima de todo mientras trabajas.",
+    tagSnapLeft: "◧ Acoplar Izquierda",
+    tagSnapRight: "◨ Acoplar Derecha",
+    tagMaximize: "⬚ Maximizar",
+    tagPin: "📌 Fijar Arriba",
+
+    f2Title: "HUD Visual de Cambio Rápido con ⌥Tab",
+    f2Desc: "Olvídate del selector básico de apps. Mira miniaturas en vivo de tus ventanas. Navega con las flechas, pulsa Enter para cambiar o pulsa Q para cerrar al instante.",
+    tagPreviews: "Vistas Previas en Vivo",
+
+    f3Title: "Organizador de Escritorio en 1 Clic",
+    f3Desc: "¿Caos en el escritorio? Un solo clic clasifica todo en carpetas: Imágenes, Documentos, Archivos, Aplicaciones y Código. O haz invisibles los iconos para compartir pantalla.",
+    tagSmartCat: "Categorías Inteligentes",
+    tagHideIcons: "Ocultar Iconos",
+
+    f4Title: "Espacios de Trabajo Guardados (Sesiones)",
+    f4Desc: "¿Organizas tu pantalla para programar, investigar o editar video? Guarda tus ubicaciones de ventanas con un clic y restaura todo tu diseño al instante.",
+    tagSnapshots: "Capturas de Diseño",
+    tagInstantRestore: "Restauración Instantánea",
+    tagMultiMonitor: "Multi-Monitor",
+
+    f5Title: "Forzar Salida Inmediata para Apps Bloqueadas",
+    f5Desc: "¿Apps congeladas que no se cierran del Dock? Haz Option+Clic en cualquier botón de cierre o presiona ⌥⇧Q para terminar procesos al instante.",
+    tagDockClean: "Limpieza del Dock",
+
+    f6Title: "Cero Telemetría. 100% Swift Nativo",
+    f6Desc: "Sin el peso de Electron. Creado exclusivamente en Swift 6 nativo y SwiftUI. Funciona con menos de 20MB de RAM, inicio instantáneo y privacidad total.",
+    tagZeroTracking: "Sin Rastreo",
+
+    // Tabla Comparativa
+    compBadge: "¿POR QUÉ DESKTOP ORGANIZER?",
+    compTitle: "macOS Tradicional vs. Desktop Organizer",
+    compColFeature: "Capacidad de Trabajo",
+    compColDefault: "macOS Estándar",
+    compRow1: "Selector Visual de Ventanas ⌥Tab con Vistas Previas",
+    compRow1Default: "❌ Solo iconos de app, sin vista previa",
+    compRow1Pro: "✅ Miniaturas en vivo, flechas y cierre con Q",
+    compRow2: "Acoplar Izquierda / Derecha / Maximizar con 1 Clic",
+    compRow2Default: "⚠️ Menú verde tosco y lento",
+    compRow2Pro: "✅ Controles rápidos en tarjetas y menú",
+    compRow3: "Clasificación Automática de Archivos del Escritorio",
+    compRow3Default: "❌ Requiere arrastrar a mano",
+    compRow3Pro: "✅ Clasificación inteligente instantánea",
+    compRow4: "Guardar y Restaurar Diseños de Espacios de Trabajo",
+    compRow4Default: "❌ No soportado de forma nativa",
+    compRow4Pro: "✅ Guarda diseños con nombre y restaura cuando quieras",
+    compRow5: "Forzar Salida Rápida de Apps Bloqueadas",
+    compRow5Default: "⚠️ Proceso de 4 pasos en Monitor de Actividad",
+    compRow5Pro: "✅ 1 clic Option+Cerrar o atajo ⌥⇧Q",
+
+    // Instalación
+    installBadge: "EMPIEZA EN 30 SEGUNDOS",
+    installTitle: "Instalación sencilla en 3 pasos",
+    step1Title: "Descarga el ZIP",
+    step1Desc: "Haz clic en el botón de descarga para obtener el paquete oficial y notarizado DesktopOrganizer.zip.",
+    step2Title: "Mueve a Aplicaciones",
+    step2Desc: "Descomprime el archivo zip y arrastra DesktopOrganizer.app a tu carpeta de Aplicaciones de macOS.",
+    step3Title: "Abre y Presiona ⌥A",
+    step3Desc: "Abre la app, concede el permiso de Accesibilidad una sola vez y controla tu escritorio desde la barra de menú o con ⌥A.",
+
+    // FAQ
+    faqBadge: "PREGUNTAS FRECUENTES",
+    faqTitle: "Preguntas y Respuestas Habituales",
+    faq1Q: "¿macOS mostrará una advertencia de seguridad de \"Desarrollador no identificado\" o Gatekeeper?",
+    faq1A: "<strong>¡No!</strong> Desktop Organizer está firmado oficialmente con un Apple Developer ID y completamente <strong>Notarizado por Apple</strong>. Gatekeeper lo verifica automáticamente sin ningún bloqueo de seguridad.",
+    faq2Q: "¿Qué versiones de macOS y modelos de Mac son compatibles?",
+    faq2A: "Desktop Organizer está diseñado para macOS 14.0+ Sonoma y macOS 15.0+ Sequoia. Funciona de manera nativa tanto en Apple Silicon (M1, M2, M3, M4) como en Mac con Intel.",
+    faq3Q: "¿Por qué Desktop Organizer necesita permiso de Accesibilidad?",
+    faq3A: "macOS requiere permisos de Accesibilidad para que la app pueda enfocar ventanas, moverlas/acoplarlas cuando haces clic en los botones y forzar salida. Todos los datos permanecen 100% en tu máquina local.",
+    faq4Q: "¿Cómo funcionan las actualizaciones automáticas?",
+    faq4A: "La aplicación comprueba GitHub Releases en segundo plano. Cuando sale una nueva versión, aparece un banner verde 🚀 en la app. Un solo clic descarga y reinicia la app con la versión más reciente.",
+    faq5Q: "¿Desktop Organizer es gratuito y de código abierto?",
+    faq5A: "¡Sí! Desktop Organizer es de código abierto en GitHub. Puedes revisar el código fuente, colaborar o descargarlo y usarlo de forma totalmente gratuita.",
+
+    // Banner CTA
+    ctaBannerTitle: "¿Listo para organizar tu escritorio en Mac?",
+    ctaBannerSubtitle: "Descarga Desktop Organizer hoy. Gratis, notarizado y de código abierto.",
+    ctaDownloadBtn: "Descargar para macOS",
+    ctaSubnote: "Requiere macOS 14.0 Sonoma o posterior • Apple Silicon e Intel",
+
+    // Footer
+    footerDesc: "Administrador Inteligente de Ventanas y Escritorio para macOS",
+    footerReleases: "Versiones",
+    footerCreatedBy: "Creado por",
+    footerRights: "Todos los derechos reservados."
   }
 };
 
 // MARK: - State & Language Switcher Engine
 let currentLang = 'en';
 
-// Detect preferred browser language (TR if starts with tr, else EN)
+// Detect preferred browser language (TR if starts with tr, ES if starts with es, else EN)
 const savedLang = localStorage.getItem('desktoporganizer_lang');
-if (savedLang === 'tr' || savedLang === 'en') {
+if (savedLang === 'tr' || savedLang === 'en' || savedLang === 'es') {
   currentLang = savedLang;
 } else {
-  const userBrowserLang = navigator.language || navigator.userLanguage || '';
-  if (userBrowserLang.toLowerCase().startsWith('tr')) {
+  const userBrowserLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+  if (userBrowserLang.startsWith('tr')) {
     currentLang = 'tr';
+  } else if (userBrowserLang.startsWith('es')) {
+    currentLang = 'es';
   }
 }
 
@@ -320,36 +465,42 @@ function updateLanguage(lang) {
   });
 
   // 2. Update Segmented Nav Buttons
-  const btnEn = document.getElementById('btn-lang-en');
-  const btnTr = document.getElementById('btn-lang-tr');
-  if (btnEn && btnTr) {
-    if (lang === 'tr') {
-      btnTr.classList.add('active');
-      btnEn.classList.remove('active');
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    if (btn.getAttribute('data-lang') === lang) {
+      btn.classList.add('active');
     } else {
-      btnEn.classList.add('active');
-      btnTr.classList.remove('active');
+      btn.classList.remove('active');
     }
-  }
+  });
 
   // 3. Update Mockup Header Language Pill
   const mockupLangIndicator = document.getElementById('mockup-lang-indicator');
   if (mockupLangIndicator) {
-    mockupLangIndicator.textContent = lang === 'tr' ? '🇹🇷 TR' : '🇺🇸 EN';
+    if (lang === 'tr') mockupLangIndicator.textContent = '🇹🇷 TR';
+    else if (lang === 'es') mockupLangIndicator.textContent = '🇪🇸 ES';
+    else mockupLangIndicator.textContent = '🇺🇸 EN';
   }
 
   // 4. Update Mockup Card Button Tooltips
-  const snapLeftBtns = document.querySelectorAll('.snap-btn[title="Snap Left"], .snap-btn[title="Sola Yasla"]');
-  snapLeftBtns.forEach(btn => btn.title = lang === 'tr' ? 'Sola Yasla' : 'Snap Left');
+  const snapLeftBtns = document.querySelectorAll('.snap-btn:nth-child(1)');
+  snapLeftBtns.forEach(btn => {
+    btn.title = lang === 'tr' ? 'Sola Yasla' : (lang === 'es' ? 'Acoplar Izquierda' : 'Snap Left');
+  });
 
-  const snapMaxBtns = document.querySelectorAll('.snap-btn[title="Maximize"], .snap-btn[title="Tam Ekran"]');
-  snapMaxBtns.forEach(btn => btn.title = lang === 'tr' ? 'Tam Ekran' : 'Maximize');
+  const snapMaxBtns = document.querySelectorAll('.snap-btn:nth-child(2)');
+  snapMaxBtns.forEach(btn => {
+    btn.title = lang === 'tr' ? 'Tam Ekran' : (lang === 'es' ? 'Maximizar' : 'Maximize');
+  });
 
-  const snapRightBtns = document.querySelectorAll('.snap-btn[title="Snap Right"], .snap-btn[title="Sağa Yasla"]');
-  snapRightBtns.forEach(btn => btn.title = lang === 'tr' ? 'Sağa Yasla' : 'Snap Right');
+  const snapRightBtns = document.querySelectorAll('.snap-btn:nth-child(3)');
+  snapRightBtns.forEach(btn => {
+    btn.title = lang === 'tr' ? 'Sağa Yasla' : (lang === 'es' ? 'Acoplar Derecha' : 'Snap Right');
+  });
 
   const forceQuitBtns = document.querySelectorAll('.force-quit-btn');
-  forceQuitBtns.forEach(btn => btn.title = lang === 'tr' ? 'Uygulamayı Zorla Kapat' : 'Force Quit App');
+  forceQuitBtns.forEach(btn => {
+    btn.title = lang === 'tr' ? 'Uygulamayı Zorla Kapat' : (lang === 'es' ? 'Forzar Salida' : 'Force Quit App');
+  });
 
   // 5. Update html lang attribute
   document.documentElement.lang = lang;
@@ -361,21 +512,21 @@ document.addEventListener('DOMContentLoaded', () => {
   updateLanguage(currentLang);
 
   // 2. Segmented Language Switcher Listeners
-  const btnEn = document.getElementById('btn-lang-en');
-  const btnTr = document.getElementById('btn-lang-tr');
-  if (btnEn) {
-    btnEn.addEventListener('click', () => updateLanguage('en'));
-  }
-  if (btnTr) {
-    btnTr.addEventListener('click', () => updateLanguage('tr'));
-  }
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const selected = btn.getAttribute('data-lang');
+      if (selected) updateLanguage(selected);
+    });
+  });
 
-  // Mockup language indicator is also clickable!
+  // Mockup language indicator cycle (EN -> TR -> ES -> EN)
   const mockupLangIndicator = document.getElementById('mockup-lang-indicator');
   if (mockupLangIndicator) {
     mockupLangIndicator.style.cursor = 'pointer';
     mockupLangIndicator.addEventListener('click', () => {
-      updateLanguage(currentLang === 'en' ? 'tr' : 'en');
+      const order = ['en', 'tr', 'es'];
+      const nextIndex = (order.indexOf(currentLang) + 1) % order.length;
+      updateLanguage(order[nextIndex]);
     });
   }
 

@@ -16,11 +16,23 @@ public enum GridViewMode: String, CaseIterable, Identifiable {
     public var localizedTitle: String {
         switch self {
         case .large:
-            return LocalizationManager.shared.currentLanguage == .turkish ? "Büyük Kart" : "Large Cards"
+            switch LocalizationManager.shared.currentLanguage {
+            case .turkish: return "Büyük Kart"
+            case .spanish: return "Tarjetas Grandes"
+            case .english: return "Large Cards"
+            }
         case .compact:
-            return LocalizationManager.shared.currentLanguage == .turkish ? "Küçük Önizleme" : "Compact Grid"
+            switch LocalizationManager.shared.currentLanguage {
+            case .turkish: return "Küçük Önizleme"
+            case .spanish: return "Cuadrícula Compacta"
+            case .english: return "Compact Grid"
+            }
         case .list:
-            return LocalizationManager.shared.currentLanguage == .turkish ? "Liste" : "List View"
+            switch LocalizationManager.shared.currentLanguage {
+            case .turkish: return "Liste"
+            case .spanish: return "Vista de Lista"
+            case .english: return "List View"
+            }
         }
     }
 
