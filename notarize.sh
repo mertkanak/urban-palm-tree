@@ -61,9 +61,11 @@ echo "-> Gatekeeper doğrulaması test ediliyor..."
 spctl --assess --type execute --verbose "$APP_BUNDLE"
 
 # 8. Web sitesinden dağıtım için son ZIP'i oluştur
-FINAL_ZIP="$PROJECT_DIR/DesktopOrganizer-signed.zip"
-rm -f "$FINAL_ZIP"
+FINAL_ZIP="$PROJECT_DIR/DesktopOrganizer.zip"
+SIGNED_ZIP="$PROJECT_DIR/DesktopOrganizer-signed.zip"
+rm -f "$FINAL_ZIP" "$SIGNED_ZIP"
 ditto -c -k --sequesterRsrc --keepParent "$APP_BUNDLE" "$FINAL_ZIP"
+cp "$FINAL_ZIP" "$SIGNED_ZIP"
 
 echo ""
 echo "========================================================="
