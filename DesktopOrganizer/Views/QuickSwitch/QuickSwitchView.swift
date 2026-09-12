@@ -5,6 +5,7 @@ import SwiftUI
 /// Enter ile pencereye geçiş, ESC ile anında kapanma.
 public struct QuickSwitchView: View {
     @ObservedObject var manager: QuickSwitchManager = .shared
+    @ObservedObject var l10n: LocalizationManager = .shared
 
     public init() {}
 
@@ -16,13 +17,13 @@ public struct QuickSwitchView: View {
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.blue)
 
-                Text("Hızlı Pencere Geçişi")
+                Text(L10n.quickSwitchTitle)
                     .font(.system(size: 13, weight: .bold))
                     .foregroundColor(.primary)
 
                 Spacer()
 
-                Text("\(manager.windows.count) Açık Pencere")
+                Text(L10n.openWindowsCount(manager.windows.count))
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(.secondary)
             }
@@ -35,7 +36,7 @@ public struct QuickSwitchView: View {
                     Image(systemName: "macwindow.on.rectangle")
                         .font(.system(size: 32))
                         .foregroundColor(.secondary.opacity(0.6))
-                    Text("Açık pencere bulunamadı")
+                    Text(L10n.quickSwitchEmpty)
                         .font(.system(size: 13))
                         .foregroundColor(.secondary)
                 }
@@ -108,7 +109,7 @@ public struct QuickSwitchView: View {
                         .padding(.vertical, 2)
                         .background(Color.white.opacity(0.12))
                         .cornerRadius(4)
-                    Text("Gezin")
+                    Text(L10n.hintNavigate)
                 }
 
                 HStack(spacing: 4) {
@@ -118,7 +119,7 @@ public struct QuickSwitchView: View {
                         .padding(.vertical, 2)
                         .background(Color.white.opacity(0.12))
                         .cornerRadius(4)
-                    Text("Sonraki")
+                    Text(L10n.hintNext)
                 }
 
                 HStack(spacing: 4) {
@@ -128,7 +129,7 @@ public struct QuickSwitchView: View {
                         .padding(.vertical, 2)
                         .background(Color.blue.opacity(0.35))
                         .cornerRadius(4)
-                    Text("Pencereye Geç")
+                    Text(L10n.hintSwitch)
                 }
 
                 HStack(spacing: 4) {
@@ -138,7 +139,7 @@ public struct QuickSwitchView: View {
                         .padding(.vertical, 2)
                         .background(Color.red.opacity(0.35))
                         .cornerRadius(4)
-                    Text("Force Quit")
+                    Text(L10n.hintForceQuit)
                 }
 
                 HStack(spacing: 4) {
@@ -148,7 +149,7 @@ public struct QuickSwitchView: View {
                         .padding(.vertical, 2)
                         .background(Color.white.opacity(0.12))
                         .cornerRadius(4)
-                    Text("Kapat")
+                    Text(L10n.hintClose)
                 }
             }
             .font(.system(size: 10))

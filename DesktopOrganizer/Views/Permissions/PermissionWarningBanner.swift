@@ -3,6 +3,7 @@ import SwiftUI
 /// Eksik sistem izinleri durumunda kullanıcıya rehberlik eden uyarı şeridi
 public struct PermissionWarningBanner: View {
     @ObservedObject var permissionManager: PermissionManager = .shared
+    @ObservedObject var l10n: LocalizationManager = .shared
 
     public init() {}
 
@@ -15,11 +16,11 @@ public struct PermissionWarningBanner: View {
                         .foregroundColor(.orange)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Sistem İzinleri Gerekli")
+                        Text(L10n.systemPermissionsTitle)
                             .font(.system(size: 13, weight: .bold))
                             .foregroundColor(.primary)
 
-                        Text("Pencereleri öne getirmek ve canlı önizlemeler için izinler gereklidir.\n⚠️ Ayarlarda zaten açık görünüyorsa: Anahtarı bir kez kapatıp tekrar açmanız yeterlidir.")
+                        Text(L10n.systemPermissionsSubtitle)
                             .font(.system(size: 10.5))
                             .foregroundColor(.secondary)
                     }
@@ -34,7 +35,7 @@ public struct PermissionWarningBanner: View {
                             }) {
                                 HStack(spacing: 4) {
                                     Image(systemName: "hand.raised.fill")
-                                    Text("Erişilebilirlik İzni")
+                                    Text(L10n.accessibilityPermission)
                                 }
                                 .font(.system(size: 11, weight: .medium))
                             }
@@ -49,7 +50,7 @@ public struct PermissionWarningBanner: View {
                             }) {
                                 HStack(spacing: 4) {
                                     Image(systemName: "rectangle.inset.filled.and.cursorarrow")
-                                    Text("Ekran Kaydı İzni")
+                                    Text(L10n.screenCapturePermission)
                                 }
                                 .font(.system(size: 11, weight: .medium))
                             }
@@ -64,7 +65,7 @@ public struct PermissionWarningBanner: View {
                                 .font(.system(size: 11, weight: .medium))
                         }
                         .buttonStyle(.bordered)
-                        .help("İzinleri Yeniden Kontrol Et")
+                        .help(L10n.recheckPermissions)
                     }
                 }
                 .padding(.horizontal, 16)

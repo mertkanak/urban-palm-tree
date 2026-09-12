@@ -52,37 +52,61 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     private func showContextMenu() {
         let menu = NSMenu()
 
-        let toggleItem = NSMenuItem(title: "Desktop Organizer'ı Aç/Kapat", action: #selector(toggleOverlay), keyEquivalent: "o")
+        let toggleItem = NSMenuItem(title: L10n.menuToggle, action: #selector(toggleOverlay), keyEquivalent: "o")
         toggleItem.target = self
         menu.addItem(toggleItem)
 
-        let quickItem = NSMenuItem(title: "Hızlı Pencere Değiştirici (⌥+Tab / ⌃+Tab)", action: #selector(toggleQuickSwitch), keyEquivalent: "")
+        let quickItem = NSMenuItem(title: L10n.menuQuickSwitch, action: #selector(toggleQuickSwitch), keyEquivalent: "")
         quickItem.target = self
         menu.addItem(quickItem)
 
         menu.addItem(NSMenuItem.separator())
 
-        let refreshItem = NSMenuItem(title: "Pencereleri Yenile", action: #selector(refreshAll), keyEquivalent: "r")
+        let refreshItem = NSMenuItem(title: L10n.menuRefreshWindows, action: #selector(refreshAll), keyEquivalent: "r")
         refreshItem.target = self
         menu.addItem(refreshItem)
 
-        let toggleDesktopItem = NSMenuItem(title: "Masaüstü İkonlarını Gizle/Göster", action: #selector(toggleDesktopIcons), keyEquivalent: "d")
+        let toggleDesktopItem = NSMenuItem(title: L10n.menuToggleDesktopIcons, action: #selector(toggleDesktopIcons), keyEquivalent: "d")
         toggleDesktopItem.target = self
         menu.addItem(toggleDesktopItem)
 
         menu.addItem(NSMenuItem.separator())
 
-        let forceQuitAllItem = NSMenuItem(title: "Tüm Açık Uygulamaları Kapat (⌥+⇧+Q)", action: #selector(forceQuitAllClicked), keyEquivalent: "")
+        let forceQuitAllItem = NSMenuItem(title: L10n.menuForceQuitAll, action: #selector(forceQuitAllClicked), keyEquivalent: "")
         forceQuitAllItem.target = self
         menu.addItem(forceQuitAllItem)
 
-        let quitItem = NSMenuItem(title: "Çıkış", action: #selector(quitApp), keyEquivalent: "q")
+        menu.addItem(NSMenuItem.separator())
+
+        // Dil Değiştirme Alt Menüsü
+        let langMenu = NSMenu()
+        for lang in AppLanguage.allCases {
+            let isCurrent = LocalizationManager.shared.currentLanguage == lang
+            let item = NSMenuItem(title: "\(lang.flag) \(lang.displayName)", action: #selector(changeLanguageClicked(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = lang
+            item.state = isCurrent ? .on : .off
+            langMenu.addItem(item)
+        }
+        let langParentItem = NSMenuItem(title: L10n.menuLanguage, action: nil, keyEquivalent: "")
+        langParentItem.submenu = langMenu
+        menu.addItem(langParentItem)
+
+        menu.addItem(NSMenuItem.separator())
+
+        let quitItem = NSMenuItem(title: L10n.menuQuit, action: #selector(quitApp), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
 
         statusItem?.menu = menu
         statusItem?.button?.performClick(nil)
         statusItem?.menu = nil
+    }
+
+    @objc private func changeLanguageClicked(_ sender: NSMenuItem) {
+        if let lang = sender.representedObject as? AppLanguage {
+            LocalizationManager.shared.setLanguage(lang)
+        }
     }
 
     @objc public func refreshAll() {

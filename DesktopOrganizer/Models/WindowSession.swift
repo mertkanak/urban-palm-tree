@@ -50,8 +50,9 @@ public struct WindowSession: Codable, Identifiable, Sendable {
     }
 
     /// Ekranda gösterilecek özet açıklaması
+    @MainActor
     public var summary: String {
-        "\(entries.count) pencere • \(formattedDate)"
+        L10n.sessionSummary(count: entries.count, date: formattedDate)
     }
 
     private var formattedDate: String {

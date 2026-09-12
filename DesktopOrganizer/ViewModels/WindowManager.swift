@@ -12,6 +12,18 @@ public enum GridViewMode: String, CaseIterable, Identifiable {
 
     public var id: String { rawValue }
 
+    @MainActor
+    public var localizedTitle: String {
+        switch self {
+        case .large:
+            return LocalizationManager.shared.currentLanguage == .turkish ? "Büyük Kart" : "Large Cards"
+        case .compact:
+            return LocalizationManager.shared.currentLanguage == .turkish ? "Küçük Önizleme" : "Compact Grid"
+        case .list:
+            return LocalizationManager.shared.currentLanguage == .turkish ? "Liste" : "List View"
+        }
+    }
+
     public var systemIcon: String {
         switch self {
         case .large:   return "rectangle.grid.2x2.fill"

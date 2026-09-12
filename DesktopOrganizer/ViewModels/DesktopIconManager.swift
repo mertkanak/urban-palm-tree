@@ -10,6 +10,16 @@ public enum DesktopViewMode: String, CaseIterable, Identifiable {
 
     public var id: String { rawValue }
 
+    @MainActor
+    public var localizedTitle: String {
+        switch self {
+        case .grid:
+            return LocalizationManager.shared.currentLanguage == .turkish ? "Izgara" : "Grid"
+        case .stack:
+            return LocalizationManager.shared.currentLanguage == .turkish ? "Yığın (Kategorili)" : "Category Stacks"
+        }
+    }
+
     public var iconName: String {
         switch self {
         case .grid: return "square.grid.3x3.fill"

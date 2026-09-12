@@ -3,6 +3,7 @@ import SwiftUI
 /// Güncelleme mevcut olduğunda gösterilen yeşil banner
 public struct UpdateBannerView: View {
     @ObservedObject var updater: AutoUpdater = .shared
+    @ObservedObject var l10n: LocalizationManager = .shared
     @State private var isInstalling: Bool = false
 
     public init() {}
@@ -20,10 +21,10 @@ public struct UpdateBannerView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Yeni Güncelleme Mevcut!")
+                    Text(L10n.updateAvailableTitle)
                         .font(.system(size: 13, weight: .bold))
                         .foregroundColor(.primary)
-                    Text("Sürüm \(updater.latestVersion) hazır  •  Mevcut: \(updater.currentVersion)")
+                    Text(L10n.updateVersionText(latest: updater.latestVersion, current: updater.currentVersion))
                         .font(.system(size: 11))
                         .foregroundColor(.secondary)
                 }
@@ -47,7 +48,7 @@ public struct UpdateBannerView: View {
                     }) {
                         HStack(spacing: 6) {
                             Image(systemName: "arrow.down.circle.fill")
-                            Text("Şimdi Güncelle ve Yeniden Başlat")
+                            Text(L10n.updateButton)
                         }
                         .font(.system(size: 12, weight: .semibold))
                     }

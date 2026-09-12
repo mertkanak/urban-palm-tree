@@ -88,7 +88,7 @@ public struct WindowMiniCardView: View {
                                         .background(Circle().fill(Color.purple.opacity(0.9)))
                                 }
                                 .buttonStyle(.plain)
-                                .help("\(item.appName) Uygulamasını Tamamen Kapat (Force Quit)")
+                                .help(L10n.forceQuitHelp(app: item.appName))
                                 // Pencere Kapat (X) Butonu
                                 Button(action: {
                                     if NSEvent.modifierFlags.contains(.option) {
@@ -104,7 +104,7 @@ public struct WindowMiniCardView: View {
                                         .background(Circle().fill(Color.red.opacity(0.85)))
                                 }
                                 .buttonStyle(.plain)
-                                .help("Pencereyi Kapat (⌥ ile Force Quit)")
+                                .help(L10n.closeWindowHelp)
                             }
                             .padding(5)
                         }

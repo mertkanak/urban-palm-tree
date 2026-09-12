@@ -12,6 +12,11 @@ public enum FileCategory: String, CaseIterable, Identifiable, Sendable {
 
     public var id: String { rawValue }
 
+    @MainActor
+    public var localizedTitle: String {
+        L10n.categoryName(rawValue)
+    }
+
     public var systemIconName: String {
         switch self {
         case .images:

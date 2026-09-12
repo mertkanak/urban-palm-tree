@@ -9,6 +9,7 @@ public struct MainOverlayView: View {
     @ObservedObject var permissionManager: PermissionManager = .shared
     @ObservedObject var sessionManager: SessionManager = .shared
     @ObservedObject var updater: AutoUpdater = .shared
+    @ObservedObject var l10n: LocalizationManager = .shared
 
     public init() {}
 
@@ -73,11 +74,11 @@ public struct MainOverlayView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Desktop Organizer")
+                    Text(L10n.appTitle)
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(.primary)
 
-                    Text("Pencere & Masaüstü Yöneticisi")
+                    Text(L10n.appSubtitle)
                         .font(.system(size: 10))
                         .foregroundColor(.secondary)
                 }
@@ -92,7 +93,7 @@ public struct MainOverlayView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "macwindow.on.rectangle")
                             .font(.system(size: 13, weight: selectedTab == 0 ? .bold : .regular))
-                        Text("Pencereler (\(windowManager.windows.count))")
+                        Text("\(L10n.windowsTab) (\(windowManager.windows.count))")
                             .font(.system(size: 12, weight: selectedTab == 0 ? .bold : .medium))
                     }
                     .padding(.horizontal, 12)
@@ -109,7 +110,7 @@ public struct MainOverlayView: View {
                 Button(action: { withAnimation(.easeInOut(duration: 0.2)) { selectedTab = 1 } }) {
                     HStack(spacing: 6) {
                         DrawerIconView(size: 15, color: selectedTab == 1 ? .white : .secondary)
-                        Text("Masaüstü (\(iconManager.items.count))")
+                        Text("\(L10n.desktopTab) (\(iconManager.items.count))")
                             .font(.system(size: 12, weight: selectedTab == 1 ? .bold : .medium))
                     }
                     .padding(.horizontal, 12)
@@ -134,7 +135,7 @@ public struct MainOverlayView: View {
 
             Spacer()
 
-            // Hızlı Eylemler (Session + Yenile + Kapat)
+            // Hızlı Eylemler (Session + Yenile + Kapat + Dil)
             HStack(spacing: 8) {
                 // Quick Switcher
                 Button(action: {
@@ -153,7 +154,7 @@ public struct MainOverlayView: View {
                     )
                 }
                 .buttonStyle(.plain)
-                .help("Hızlı Pencere Değiştirici (⌥+S veya ⌥+Tab)")
+                .help(L10n.quickSwitchHelp)
 
                 // Session Manager
                 Button(action: { showingSessionSheet.toggle() }) {
@@ -174,7 +175,7 @@ public struct MainOverlayView: View {
                     )
                 }
                 .buttonStyle(.plain)
-                .help("Kaydedilmiş Düzenler (Çalışma Alanları)")
+                .help(L10n.sessionsHelp)
                 .popover(isPresented: $showingSessionSheet, arrowEdge: .bottom) {
                     SessionManagerView()
                 }
@@ -188,7 +189,7 @@ public struct MainOverlayView: View {
                         .font(.system(size: 12, weight: .medium))
                 }
                 .buttonStyle(.bordered)
-                .help("Tümünü Yenile")
+                .help(L10n.refreshAll)
 
                 // Tüm Açık Uygulamaları Force Quit Yap Butonu
                 Button(action: {
@@ -197,7 +198,7 @@ public struct MainOverlayView: View {
                     HStack(spacing: 4) {
                         Image(systemName: "xmark.octagon.fill")
                             .font(.system(size: 11, weight: .semibold))
-                        Text("Tümünü Kapat")
+                        Text(L10n.forceQuitAll)
                             .font(.system(size: 11, weight: .semibold))
                         Text("⌥⇧Q")
                             .font(.system(size: 9, weight: .bold, design: .monospaced))
@@ -215,7 +216,32 @@ public struct MainOverlayView: View {
                     )
                 }
                 .buttonStyle(.plain)
-                .help("Açık olan tüm uygulamaları tamamen zorla kapat (Force Quit All - ⌥⇧Q)")
+                .help(L10n.forceQuitAllHelp)
+
+                // Dil Seçici Butonu (🇺🇸 EN / 🇹🇷 TR)
+                Button(action: {
+                    l10n.toggleLanguage()
+                }) {
+                    HStack(spacing: 3) {
+                        Text(l10n.currentLanguage.flag)
+                            .font(.system(size: 11))
+                        Text(l10n.currentLanguage.codeUpper)
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    }
+                    .foregroundColor(.primary)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .fill(Color(nsColor: .controlBackgroundColor).opacity(0.6))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .strokeBorder(Color.white.opacity(0.15), lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+                .help(L10n.languageHelp)
 
                 Button(action: {
                     NSApplication.shared.hide(nil)
@@ -224,7 +250,7 @@ public struct MainOverlayView: View {
                         .font(.system(size: 11, weight: .bold))
                 }
                 .buttonStyle(.bordered)
-                .help("Paneli Gizle (Menü çubuğundan veya kısayolla tekrar açılabilir)")
+                .help(L10n.hidePanelHelp)
             }
         }
         .padding(.horizontal, 20)
@@ -240,14 +266,14 @@ public struct MainOverlayView: View {
                     .fill(permissionManager.state.allGranted ? Color.green : Color.orange)
                     .frame(width: 7, height: 7)
 
-                Text(permissionManager.state.allGranted ? "Sistem İzinleri Etkin" : "Bazı İzinler Eksik")
+                Text(permissionManager.state.allGranted ? L10n.permissionsGranted : L10n.permissionsMissing)
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
             }
 
             Spacer()
 
-            Text("İpucu: Karta tıklayarak öne getirebilir, sürükleyerek masaüstünde konumlandırabilirsiniz.")
+            Text(L10n.statusBarTip)
                 .font(.system(size: 11))
                 .foregroundColor(.secondary.opacity(0.8))
 

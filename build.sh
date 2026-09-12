@@ -33,6 +33,7 @@ SOURCES=(
     "DesktopOrganizer/Managers/SessionManager.swift"
     "DesktopOrganizer/Managers/AutoUpdater.swift"
     "DesktopOrganizer/Managers/QuickSwitchManager.swift"
+    "DesktopOrganizer/Managers/LocalizationManager.swift"
     "DesktopOrganizer/ViewModels/WindowManager.swift"
     "DesktopOrganizer/ViewModels/DesktopIconManager.swift"
     "DesktopOrganizer/Views/Components/VisualEffectBackground.swift"

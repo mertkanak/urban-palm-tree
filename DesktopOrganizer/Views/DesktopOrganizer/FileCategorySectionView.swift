@@ -5,6 +5,7 @@ public struct FileCategorySectionView: View {
     public let category: FileCategory
     public let items: [DesktopFileItem]
     @ObservedObject var iconManager: DesktopIconManager = .shared
+    @ObservedObject var l10n: LocalizationManager = .shared
 
     public init(category: FileCategory, items: [DesktopFileItem]) {
         self.category = category
@@ -23,7 +24,7 @@ public struct FileCategorySectionView: View {
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(category.color)
 
-                Text(category.rawValue)
+                Text(category.localizedTitle)
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.primary)
 
@@ -60,6 +61,7 @@ public struct FileCategorySectionView: View {
 public struct FileItemCardView: View {
     public let item: DesktopFileItem
     @ObservedObject var iconManager: DesktopIconManager = .shared
+    @ObservedObject var l10n: LocalizationManager = .shared
     @State private var isHovered: Bool = false
 
     public var body: some View {
@@ -79,7 +81,7 @@ public struct FileItemCardView: View {
                 .foregroundColor(.primary)
 
             // Boyut veya Tür
-            Text(item.sizeString)
+            Text(item.displaySize)
                 .font(.system(size: 10))
                 .foregroundColor(.secondary)
         }
@@ -102,13 +104,13 @@ public struct FileItemCardView: View {
             iconManager.openItem(item)
         }
         .contextMenu {
-            Button("Aç") {
+            Button(L10n.open) {
                 iconManager.openItem(item)
             }
-            Button("Finder'da Göster") {
+            Button(L10n.showInFinder) {
                 iconManager.showInFinder(item)
             }
         }
-        .help("\(item.name)\nÇift tıklayarak açın")
+        .help("\(item.name)\n\(L10n.doubleClickToOpen)")
     }
 }

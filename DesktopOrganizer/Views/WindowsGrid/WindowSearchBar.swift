@@ -3,6 +3,7 @@ import SwiftUI
 /// Açık pencereleri filtreleyen, arayan ve gruplama modunu değiştiren kontrol çubuğu
 public struct WindowSearchBar: View {
     @ObservedObject var windowManager: WindowManager = .shared
+    @ObservedObject var l10n: LocalizationManager = .shared
 
     public init() {}
 
@@ -14,7 +15,7 @@ public struct WindowSearchBar: View {
                     .foregroundColor(.secondary)
                     .font(.system(size: 13))
 
-                TextField("Pencere veya uygulama ara...", text: $windowManager.searchQuery)
+                TextField(L10n.searchPlaceholder, text: $windowManager.searchQuery)
                     .textFieldStyle(.plain)
                     .font(.system(size: 13))
 
@@ -60,7 +61,7 @@ public struct WindowSearchBar: View {
                             )
                     }
                     .buttonStyle(.plain)
-                    .help(mode.rawValue)
+                    .help(mode.localizedTitle)
                 }
             }
             .padding(3)
@@ -81,7 +82,7 @@ public struct WindowSearchBar: View {
             }) {
                 HStack(spacing: 6) {
                     Image(systemName: windowManager.isGroupingByApp ? "square.grid.2x2.fill" : "square.grid.2x2")
-                    Text("Grupla")
+                    Text(L10n.groupByApp)
                         .font(.system(size: 12, weight: .medium))
                 }
                 .padding(.horizontal, 10)
@@ -105,7 +106,7 @@ public struct WindowSearchBar: View {
                     .fill(Color.green)
                     .frame(width: 7, height: 7)
 
-                Text("\(windowManager.filteredWindows.count) Açık Pencere")
+                Text(L10n.openWindowsCount(windowManager.filteredWindows.count))
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.secondary)
             }

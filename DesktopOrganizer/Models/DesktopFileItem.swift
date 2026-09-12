@@ -40,4 +40,12 @@ public struct DesktopFileItem: Identifiable, Equatable, Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(url)
     }
+
+    @MainActor
+    public var displaySize: String {
+        if isDirectory {
+            return L10n.folder
+        }
+        return sizeString
+    }
 }

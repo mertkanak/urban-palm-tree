@@ -4,9 +4,10 @@ import SwiftUI
 public struct SessionManagerView: View {
     @ObservedObject var sessionManager: SessionManager = .shared
     @ObservedObject var windowManager: WindowManager = .shared
+    @ObservedObject var l10n: LocalizationManager = .shared
 
-    @State private var newSessionName: String = ""
     @State private var showingSaveField: Bool = false
+    @State private var newSessionName: String = ""
     @State private var restoringSessionID: UUID? = nil
     @State private var editingSession: WindowSession? = nil
     @State private var editName: String = ""
@@ -15,10 +16,9 @@ public struct SessionManagerView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // MARK: Üst Başlık
             headerView
-
-            Divider().opacity(0.3)
+            Divider()
+                .opacity(0.3)
 
             if sessionManager.sessions.isEmpty {
                 emptyState
@@ -26,11 +26,8 @@ public struct SessionManagerView: View {
                 sessionList
             }
         }
-        .frame(width: 420)
-        .background(
-            VisualEffectBackground(material: .hudWindow, blendingMode: .behindWindow)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .frame(width: 440)
+        .background(VisualEffectBackground(material: .popover, blendingMode: .behindWindow))
     }
 
     // MARK: - Header
@@ -40,18 +37,14 @@ public struct SessionManagerView: View {
             HStack {
                 HStack(spacing: 8) {
                     ZStack {
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(LinearGradient(
-                                colors: [.purple, .indigo],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ))
-                            .frame(width: 28, height: 28)
+                        Circle()
+                            .fill(LinearGradient(colors: [.purple, .indigo], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            .frame(width: 26, height: 26)
                         Image(systemName: "bookmark.fill")
                             .font(.system(size: 13, weight: .bold))
                             .foregroundColor(.white)
                     }
-                    Text("Kaydedilmiş Düzenler")
+                    Text(L10n.sessionsTitle)
                         .font(.system(size: 14, weight: .bold))
                 }
                 Spacer()
@@ -62,11 +55,12 @@ public struct SessionManagerView: View {
                             // Otomatik isim öner
                             let fmt = DateFormatter()
                             fmt.dateFormat = "dd.MM HH:mm"
-                            newSessionName = "Düzen \(fmt.string(from: Date()))"
+                            let prefix = L10n.layoutDefaultPrefix
+                            newSessionName = "\(prefix) \(fmt.string(from: Date()))"
                         }
                     }
                 }) {
-                    Label(showingSaveField ? "İptal" : "Düzeni Kaydet",
+                    Label(showingSaveField ? L10n.cancel : L10n.saveCurrentSession,
                           systemImage: showingSaveField ? "xmark" : "plus.circle.fill")
                         .font(.system(size: 12, weight: .semibold))
                 }
@@ -82,13 +76,13 @@ public struct SessionManagerView: View {
                         .foregroundColor(.secondary)
                         .font(.system(size: 12))
 
-                    TextField("Düzen adı...", text: $newSessionName)
+                    TextField(L10n.sessionNamePlaceholder, text: $newSessionName)
                         .textFieldStyle(.plain)
                         .font(.system(size: 13))
                         .onSubmit { saveCurrentSession() }
 
                     Button(action: saveCurrentSession) {
-                        Text("Kaydet")
+                        Text(L10n.save)
                             .font(.system(size: 12, weight: .semibold))
                     }
                     .buttonStyle(.borderedProminent)
@@ -155,10 +149,10 @@ public struct SessionManagerView: View {
             Image(systemName: "bookmark.slash")
                 .font(.system(size: 36))
                 .foregroundColor(.secondary.opacity(0.5))
-            Text("Henüz kayıtlı düzen yok")
+            Text(L10n.noSessionsYet)
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundColor(.primary)
-            Text("\"Düzeni Kaydet\" ile mevcut pencere\nkonumlarını isimle kaydedebilirsiniz.")
+            Text(L10n.sessionsEmptyDescription)
                 .font(.system(size: 11))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -197,6 +191,7 @@ private struct SessionRowView: View {
     let onDelete: () -> Void
     let onRename: () -> Void
 
+    @ObservedObject var l10n: LocalizationManager = .shared
     @State private var isHovered = false
 
     var body: some View {
@@ -227,7 +222,7 @@ private struct SessionRowView: View {
                     }
                     .buttonStyle(.plain)
                     .foregroundColor(.secondary)
-                    .help("Yeniden Adlandır")
+                    .help(L10n.rename)
 
                     // Sil
                     Button(action: onDelete) {
@@ -236,7 +231,7 @@ private struct SessionRowView: View {
                     }
                     .buttonStyle(.plain)
                     .foregroundColor(.red.opacity(0.8))
-                    .help("Düzeni Sil")
+                    .help(L10n.deleteSession)
                 }
                 .transition(.opacity.combined(with: .scale(scale: 0.85)))
             }
@@ -249,11 +244,11 @@ private struct SessionRowView: View {
                             .controlSize(.small)
                             .scaleEffect(0.7)
                     } else {
-                        Label("Yükle", systemImage: "arrow.counterclockwise")
+                        Label(L10n.restoreSession, systemImage: "arrow.counterclockwise")
                             .font(.system(size: 11, weight: .semibold))
                     }
                 }
-                .frame(width: 68, height: 22)
+                .frame(width: l10n.currentLanguage == .turkish ? 76 : 94, height: 22)
             }
             .buttonStyle(.borderedProminent)
             .tint(isRestoring ? .gray : .purple)
@@ -281,22 +276,23 @@ private struct RenameSessionSheet: View {
     let session: WindowSession
     @Binding var currentName: String
     let onSave: (String) -> Void
+    @ObservedObject var l10n: LocalizationManager = .shared
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Düzeni Yeniden Adlandır")
+            Text(L10n.renameLayoutTitle)
                 .font(.system(size: 14, weight: .bold))
 
-            TextField("Düzen adı", text: $currentName)
+            TextField(L10n.layoutNamePlaceholder, text: $currentName)
                 .textFieldStyle(.roundedBorder)
                 .frame(width: 280)
                 .onSubmit { save() }
 
             HStack(spacing: 10) {
-                Button("İptal") { dismiss() }
+                Button(L10n.cancel) { dismiss() }
                     .buttonStyle(.bordered)
-                Button("Kaydet") { save() }
+                Button(L10n.save) { save() }
                     .buttonStyle(.borderedProminent)
                     .tint(.purple)
                     .disabled(currentName.trimmingCharacters(in: .whitespaces).isEmpty)

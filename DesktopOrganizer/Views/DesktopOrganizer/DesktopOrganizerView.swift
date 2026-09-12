@@ -21,7 +21,7 @@ public struct DesktopOrganizerView: View {
                             .foregroundColor(.secondary)
                             .font(.system(size: 13))
 
-                        TextField("Masaüstü dosyalarında ara...", text: $iconManager.searchQuery)
+                        TextField(LocalizationManager.shared.currentLanguage == .turkish ? "Masaüstü dosyalarında ara..." : "Search desktop files...", text: $iconManager.searchQuery)
                             .textFieldStyle(.plain)
                             .font(.system(size: 13))
 
@@ -49,9 +49,9 @@ public struct DesktopOrganizerView: View {
                     .frame(maxWidth: 280)
 
                     // Görünüm Modu Seçici (Grid vs Stack)
-                    Picker("Görünüm", selection: $iconManager.viewMode) {
+                    Picker("", selection: $iconManager.viewMode) {
                         ForEach(DesktopViewMode.allCases) { mode in
-                            Label(mode.rawValue, systemImage: mode.iconName).tag(mode)
+                            Label(mode.localizedTitle, systemImage: mode.iconName).tag(mode)
                         }
                     }
                     .pickerStyle(.segmented)
@@ -65,7 +65,7 @@ public struct DesktopOrganizerView: View {
                     }) {
                         HStack(spacing: 6) {
                             Image(systemName: iconManager.areDesktopIconsHidden ? "eye.slash.fill" : "eye.fill")
-                            Text(iconManager.areDesktopIconsHidden ? "İkonları Göster" : "Masaüstünü Temizle (Gizle)")
+                            Text(iconManager.areDesktopIconsHidden ? L10n.showDesktopIcons : L10n.hideDesktopIcons)
                                 .font(.system(size: 12, weight: .medium))
                         }
                         .padding(.horizontal, 12)
@@ -80,7 +80,7 @@ public struct DesktopOrganizerView: View {
                         )
                     }
                     .buttonStyle(.plain)
-                    .help("Masaüstündeki tüm dosya ikonlarını gizler veya tekrar görünür yapar")
+                    .help(LocalizationManager.shared.currentLanguage == .turkish ? "Masaüstündeki tüm dosya ikonlarını gizler veya tekrar görünür yapar" : "Hide or show all desktop icons")
 
                     // Yenile Butonu
                     Button(action: {
@@ -90,7 +90,7 @@ public struct DesktopOrganizerView: View {
                             .font(.system(size: 13))
                     }
                     .buttonStyle(.bordered)
-                    .help("Masaüstü Dosyalarını Yenile")
+                    .help(LocalizationManager.shared.currentLanguage == .turkish ? "Masaüstü Dosyalarını Yenile" : "Refresh Desktop Files")
                 }
 
                 // Kategori Filtre Hapları (Pills)
@@ -102,7 +102,7 @@ public struct DesktopOrganizerView: View {
                                 iconManager.selectedCategory = nil
                             }
                         }) {
-                            Text("Tümü (\(iconManager.items.count))")
+                            Text("\(L10n.allApps) (\(iconManager.items.count))")
                                 .font(.system(size: 11, weight: iconManager.selectedCategory == nil ? .bold : .medium))
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 4)
@@ -128,7 +128,7 @@ public struct DesktopOrganizerView: View {
                                 HStack(spacing: 4) {
                                     Image(systemName: cat.systemIconName)
                                         .font(.system(size: 10))
-                                    Text("\(cat.rawValue) (\(count))")
+                                    Text("\(cat.localizedTitle) (\(count))")
                                         .font(.system(size: 11, weight: iconManager.selectedCategory == cat ? .bold : .medium))
                                 }
                                 .padding(.horizontal, 10)
@@ -191,11 +191,11 @@ public struct DesktopOrganizerView: View {
                 .font(.system(size: 48))
                 .foregroundColor(.secondary.opacity(0.5))
 
-            Text("Masaüstünde Dosya Bulunamadı")
+            Text(L10n.desktopCleanTitle)
                 .font(.system(size: 15, weight: .bold))
                 .foregroundColor(.primary)
 
-            Text("Masaüstünüze dosya veya klasör eklediğinizde burada otomatik olarak kategorize edilmiş şekilde listelenecektir.")
+            Text(L10n.desktopCleanSubtitle)
                 .font(.system(size: 12))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

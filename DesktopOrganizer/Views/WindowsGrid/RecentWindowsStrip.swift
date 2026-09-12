@@ -14,7 +14,7 @@ public struct RecentWindowsStrip: View {
                     Image(systemName: "clock.arrow.circlepath")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundColor(.secondary)
-                    Text("Son Kullanılanlar")
+                    Text(L10n.recentWindows)
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(.secondary)
                 }

@@ -61,29 +61,29 @@ public struct WindowCardView: View {
                     HStack(spacing: 6) {
                         // Hazır Boyutlandırma / Tiling Menüsü
                         Menu {
-                            Button("◧ Sol Yarıya Yerleştir") {
+                            Button(L10n.snapLeft) {
                                 windowManager.snapToLeftHalf(item)
                             }
-                            Button("◨ Sağ Yarıya Yerleştir") {
+                            Button(L10n.snapRight) {
                                 windowManager.snapToRightHalf(item)
                             }
-                            Button("⬚ Tam Ekran Yap") {
+                            Button(L10n.maximize) {
                                 windowManager.snapToMaximize(item)
                             }
-                            Button("◲ Ortala") {
+                            Button(L10n.center) {
                                 windowManager.snapToCenter(item)
                             }
                             Divider()
-                            Button("➖ Simge Durumuna Küçült") {
+                            Button(L10n.minimize) {
                                 windowManager.minimizeWindow(item)
                             }
                             Divider()
-                            Button(windowManager.isPinned(item) ? "📌 Sabitlemeyi Kaldır" : "📌 Yukarıya Sabitle") {
+                            Button(windowManager.isPinned(item) ? L10n.unpin : L10n.pinToTop) {
                                 withAnimation(.spring(response: 0.3)) {
                                     windowManager.togglePin(item)
                                 }
                             }
-                            Button("📸 Screenshot Al (Panoya)") {
+                            Button(L10n.copyScreenshot) {
                                 windowManager.screenshotWindow(item)
                             }
                         } label: {
@@ -107,7 +107,7 @@ public struct WindowCardView: View {
                                 .background(Circle().fill(Color.purple.opacity(0.9)))
                         }
                         .buttonStyle(.plain)
-                        .help("\(item.appName) Uygulamasını Tamamen Zorla Kapat (Force Quit - Dock'ta Kalmaz)")
+                        .help(L10n.forceQuitHelp(app: item.appName))
 
                         // Kapat (X) Butonu (⌥ ile tıklanırsa da Force Quit yapar)
                         Button(action: {
@@ -124,7 +124,7 @@ public struct WindowCardView: View {
                                 .background(Circle().fill(Color.red.opacity(0.85)))
                         }
                         .buttonStyle(.plain)
-                        .help("Pencereyi Kapat (⌥ Tıklama: Tamamen Force Quit)")
+                        .help(L10n.closeWindowHelp)
                     }
                     .padding(8)
                     .transition(.opacity.combined(with: .scale(scale: 0.9)))
