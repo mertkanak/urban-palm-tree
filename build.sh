@@ -98,7 +98,11 @@ echo " Derleme başarıyla tamamlandı!"
 echo " Paket Yolu: $APP_BUNDLE"
 echo ""
 
-# 5. /Applications klasörünü otomatik güncelle
+# 5. Çalışan eski süreçleri sonlandır
+killall "$APP_NAME" 2>/dev/null || true
+sleep 0.5
+
+# 6. /Applications klasörünü otomatik güncelle
 if [ -d "/Applications/$APP_NAME.app" ]; then
     echo "-> /Applications/$APP_NAME.app güncelleniyor..."
     rm -rf "/Applications/$APP_NAME.app"
@@ -106,11 +110,8 @@ if [ -d "/Applications/$APP_NAME.app" ]; then
     xattr -cr "/Applications/$APP_NAME.app" 2>/dev/null || true
 fi
 
-# 6. Çalıştırma argümanı kontrolü
+# 7. Çalıştırma argümanı kontrolü
 if [ "$1" == "run" ]; then
-    echo "-> Eski süreç kapatılıyor..."
-    killall "$APP_NAME" 2>/dev/null || true
-    sleep 0.5
     echo "-> Uygulama başlatılıyor..."
     if [ -d "/Applications/$APP_NAME.app" ]; then
         open "/Applications/$APP_NAME.app"
